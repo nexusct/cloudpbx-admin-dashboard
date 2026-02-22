@@ -1,0 +1,35 @@
+id,epic,ticket,owner_role,sprint,priority,dependencies,acceptance_test,status
+PROG-001,Program Setup,"Define RACI, decision log, escalation policy",General Manager Agent,S1,P0,,RACI approved and decision log live,Planned
+PROG-002,Program Setup,"Create shared artifact contract (ADR/API/Test/Rollback)",Chief Orchestrator Agent,S1,P0,PROG-001,All new tickets include required artifact links,Planned
+PROG-003,Program Setup,"Define release scorecard and go/no-go rubric",QA Test Manager Agent,S1,P0,PROG-001,Release gate rubric published and enforced in CI,Planned
+CORE-001,PBX Core,"Stand up SIP runtime service skeleton",PBX Core Manager Agent,S1,P0,PROG-002,Test endpoints can register and remain stable,Planned
+CORE-002,PBX Core,"Implement extension-to-extension calling",PBX Core Manager Agent,S1,P0,CORE-001,Internal call completion greater than 95 percent in lab,Planned
+CORE-003,PBX Core,"Integrate inbound and outbound trunk routing",PBX Core Manager Agent,S2,P0,CORE-002,Inbound and outbound PSTN calls produce valid CDRs,Planned
+CORE-004,PBX Core,"Implement IVR, ring groups, and queues runtime parity",PBX Core Manager Agent,S2,P1,CORE-003,Configured call flows execute correctly end to end,Planned
+CORE-005,PBX Core,"Implement voicemail, recording, and retrieval pipeline",PBX Core Manager Agent,S3,P1,CORE-004,Voicemail and recordings are accessible from UI and APIs,Planned
+PROV-001,Provisioning,"Define normalized device profile schema",Provisioning Manager Agent,S1,P0,PROG-002,Schema approved and used by adapters,Planned
+PROV-002,Provisioning,"Build adapter SDK and validation harness",Provisioning Manager Agent,S2,P0,PROV-001,Reference adapter passes all SDK conformance checks,Planned
+PROV-003,Provisioning,"Implement Yealink and Grandstream adapters",Provisioning Manager Agent,S2,P1,PROV-002,Zero-touch adopt works for both vendor baselines,Planned
+PROV-004,Provisioning,"Implement Fanvil, Poly, and UniFi adapters",Provisioning Manager Agent,S3,P1,PROV-002,Zero-touch adopt works for all listed vendors,Planned
+PROV-005,Provisioning,"Build device discovery pipeline (DHCP/SIP/UniFi signals)",Provisioning Manager Agent,S3,P0,PROV-001,Unknown phone appears in adoption queue with confidence score,Planned
+FWM-001,Firmware,"Define firmware catalog schema and provenance policy",Firmware Manager Agent,S2,P0,PROG-002,Catalog entries require hash and signature metadata,Planned
+FWM-002,Firmware,"Build fetch, verify, cache pipeline with quarantine path",Firmware Manager Agent,S3,P0,FWM-001,Corrupt or unsigned artifacts are blocked automatically,Planned
+FWM-003,Firmware,"Implement canary/group/fleet rollout rings",Firmware Manager Agent,S4,P1,FWM-002,Rollouts can be staged with policy enforcement,Planned
+FWM-004,Firmware,"Implement automated rollback on health failure",Firmware Manager Agent,S4,P0,FWM-003,Canary failure triggers rollback and alert within SLA,Planned
+UNI-001,UniFi Relay,"Build low-setup controller discovery and auth wizard",UniFi Relay Manager Agent,S2,P0,PROG-002,New controller setup succeeds using guided wizard,Planned
+UNI-002,UniFi Relay,"Implement two-way extension and device sync",UniFi Relay Manager Agent,S3,P0,UNI-001,Sync lag remains below target and state converges,Planned
+UNI-003,UniFi Relay,"Implement conflict resolution and reconciliation logs",UniFi Relay Manager Agent,S4,P1,UNI-002,Conflict handling is deterministic and auditable,Planned
+INS-001,Installer,"Build VM pipelines for OVA and QCOW2",Installer Manager Agent,S4,P0,CORE-003,Install to first call under 30 minutes on target hypervisors,Planned
+INS-002,Installer,"Build baremetal ISO pipeline",Installer Manager Agent,S5,P0,INS-001,Installer passes repeatable hardware install tests,Planned
+INS-003,Installer,"Implement first-boot setup wizard",Installer Manager Agent,S5,P1,INS-001,No CLI needed for initial system setup,Planned
+TEST-001,Testing,"Create unified test harness and fixtures",QA Test Manager Agent,S1,P0,PROG-003,Smoke and regression tests run automatically in CI,Planned
+TEST-002,Testing,"Integrate security testing suite into CI gates",Security Test Lead Agent,S2,P0,TEST-001,Critical security findings block merges,Planned
+TEST-003,Testing,"Build carrier interoperability harness",Carrier Compatibility Lead Agent,S3,P0,TEST-001,"Tier 1 carriers pass inbound, outbound, transfer, and DTMF flows",Planned
+TEST-004,Testing,"Build device and firmware compatibility harness",Device/Firmware Compatibility Lead Agent,S3,P0,TEST-001,Supported model matrix has reproducible certification reports,Planned
+TEST-005,Testing,"Run load, soak, and failover drills",Performance & Reliability Lead Agent,S4,P0,CORE-003,SLO targets met for concurrency and failover windows,Planned
+SEC-001,Security,"Threat model and privileged action policy",Security Test Lead Agent,S1,P0,PROG-001,Threat model approved and privileged actions gated,Planned
+SEC-002,Security,"Implement audit trail coverage checks",Security Test Lead Agent,S2,P1,SEC-001,All admin-impacting actions include complete audit events,Planned
+CARR-001,Carrier Compatibility,"Certify Tier 1 carriers (Twilio, Bandwidth, Telnyx)",Carrier Compatibility Lead Agent,S4,P0,TEST-003,Tier 1 carrier matrix marked certified for launch,Planned
+CARR-002,Carrier Compatibility,"Certify Tier 2 carriers (Vonage, Plivo, Flowroute, VoIP.ms)",Carrier Compatibility Lead Agent,S5,P1,CARR-001,Tier 2 matrix published with pass rates and caveats,Planned
+DOC-001,Enablement,"Publish operator runbook and rollback playbooks",Docs & Enablement Agent,S5,P1,TEST-005,On-call runbook passes tabletop incident exercise,Planned
+DOC-002,Enablement,"Publish installer and migration guides",Docs & Enablement Agent,S5,P1,INS-003,New operator can complete install and migration from docs alone,Planned
