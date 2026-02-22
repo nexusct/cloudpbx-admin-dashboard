@@ -52,12 +52,13 @@ import {
   AlertCircle,
   CircleDot,
   HeartPulse,
+  Server,
   type LucideIcon,
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   Building2, Ticket, Users, Shield, Globe, Video,
-  Calendar, FileText, Phone, Activity, HeartPulse,
+  Calendar, FileText, Phone, Activity, HeartPulse, Server
 };
 
 function getIcon(iconName: string | null): LucideIcon {
@@ -66,7 +67,7 @@ function getIcon(iconName: string | null): LucideIcon {
 }
 
 const OAUTH_SLUGS = ["ms-teams", "ms-entra", "zoho-crm", "zoho-desk", "notion", "google-workspace"];
-const CREDENTIAL_SLUGS = ["wordpress", "twilio", "unifi-voice", "unifi-network", "unifi-access", "unifi-protect", "rcare"];
+const CREDENTIAL_SLUGS = ["wordpress", "twilio", "unifi-voice", "unifi-network", "unifi-access", "unifi-protect", "rcare", "pbx-in-a-flash"];
 const UNIFI_SLUGS = ["unifi-voice", "unifi-network", "unifi-access", "unifi-protect"];
 
 interface WizardStep {
@@ -135,6 +136,13 @@ function getWizardSteps(slug: string): WizardStep[] {
       { title: "Connect", description: "Test and establish the connection" },
     ];
   }
+  if (slug === "pbx-in-a-flash") {
+    return [
+      { title: "PBX Details", description: "Enter your PBX in a Flash Host IP and AMI Port" },
+      { title: "Authentication", description: "Provide AMI Username and Secret" },
+      { title: "Connect", description: "Test and establish the connection" },
+    ];
+  }
   return [];
 }
 
@@ -150,10 +158,12 @@ function getConfigFields(slug: string) {
     return [
       { key: "clientId", label: "Client ID", placeholder: "1000.XXXXXXXXXX", required: true },
       { key: "clientSecret", label: "Client Secret", placeholder: "Your Zoho client secret", required: true, type: "password" },
-      { key: "datacenter", label: "Data Center", placeholder: "com", required: false, type: "select", options: [
-        { value: "com", label: "US (.com)" }, { value: "eu", label: "EU (.eu)" },
-        { value: "in", label: "India (.in)" }, { value: "au", label: "Australia (.au)" }, { value: "jp", label: "Japan (.jp)" },
-      ] },
+      {
+        key: "datacenter", label: "Data Center", placeholder: "com", required: false, type: "select", options: [
+          { value: "com", label: "US (.com)" }, { value: "eu", label: "EU (.eu)" },
+          { value: "in", label: "India (.in)" }, { value: "au", label: "Australia (.au)" }, { value: "jp", label: "Japan (.jp)" },
+        ]
+      },
     ];
   }
   if (slug === "notion") {
@@ -198,6 +208,14 @@ function getConfigFields(slug: string) {
       { key: "applicationPassword", label: "Password (alternative)", placeholder: "Your password", required: false, type: "password" },
     ];
   }
+  if (slug === "pbx-in-a-flash") {
+    return [
+      { key: "instanceUrl", label: "Asterisk Host IP", placeholder: "192.168.1.50", required: true },
+      { key: "port", label: "AMI Port", placeholder: "5038", required: false },
+      { key: "username", label: "AMI Username", placeholder: "admin", required: true },
+      { key: "applicationPassword", label: "AMI Secret", placeholder: "secret", required: true, type: "password" },
+    ];
+  }
   return [];
 }
 
@@ -237,6 +255,10 @@ function getSetupInstructions(slug: string, step: number): string {
       if (step === 0) return "Enter the URL of your RCare Cube server. This is typically the IP address or hostname of your Cube (e.g., https://cube.yourfacility.com or https://192.168.1.100).";
       if (step === 1) return "Choose your authentication method:\n\nAPI Key (recommended): Contact your RCare distributor or access the Cube admin panel to obtain an API key.\n\nUsername/Password (alternative): Use your RCare Cube admin credentials.";
       return "Click 'Connect' to test the connection to your RCare Cube and verify API access.";
+    case "pbx-in-a-flash":
+      if (step === 0) return "Enter the IP address or hostname of your PBX in a Flash server and its AMI (Asterisk Manager Interface) port (default is 5038).";
+      if (step === 1) return "Enter your AMI Username and Secret from the manager.conf file.";
+      return "Click 'Connect' to verify your PBX credentials and establish the connection.";
     default:
       if (UNIFI_SLUGS.includes(slug)) {
         if (step === 0) return "Enter the URL of your UniFi controller (e.g., https://192.168.1.1 or your UniFi Cloud Gateway address). This URL is shared across all UniFi products.";

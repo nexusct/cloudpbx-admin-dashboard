@@ -1,0 +1,1191 @@
+title,body,labels,milestone
+"[PROG-001] Define RACI, decision log, escalation policy","Backlog ID: PROG-001
+Epic: Program Setup
+Owner Role: General Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: None
+
+Acceptance Test:
+RACI approved and decision log live
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:program-setup,owner:general-manager-agent,priority:p0,sprint:s1",S1
+[PROG-002] Create shared artifact contract (ADR/API/Test/Rollback),"Backlog ID: PROG-002
+Epic: Program Setup
+Owner Role: Chief Orchestrator Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-001
+
+Acceptance Test:
+All new tickets include required artifact links
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:program-setup,owner:chief-orchestrator-agent,priority:p0,sprint:s1",S1
+[PROG-003] Define release scorecard and go/no-go rubric,"Backlog ID: PROG-003
+Epic: Program Setup
+Owner Role: QA Test Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-001
+
+Acceptance Test:
+Release gate rubric published and enforced in CI
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:program-setup,owner:qa-test-manager-agent,priority:p0,sprint:s1",S1
+[CORE-001] Stand up SIP runtime service skeleton,"Backlog ID: CORE-001
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-002
+
+Acceptance Test:
+Test endpoints can register and remain stable
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p0,sprint:s1",S1
+[CORE-002] Implement extension-to-extension calling,"Backlog ID: CORE-002
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: CORE-001
+
+Acceptance Test:
+Internal call completion greater than 95 percent in lab
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p0,sprint:s1",S1
+[CORE-003] Integrate inbound and outbound trunk routing,"Backlog ID: CORE-003
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S2
+Priority: P0
+Dependencies: CORE-002
+
+Acceptance Test:
+Inbound and outbound PSTN calls produce valid CDRs
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p0,sprint:s2",S2
+"[CORE-004] Implement IVR, ring groups, and queues runtime parity","Backlog ID: CORE-004
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S2
+Priority: P1
+Dependencies: CORE-003
+
+Acceptance Test:
+Configured call flows execute correctly end to end
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p1,sprint:s2",S2
+"[CORE-005] Implement voicemail, recording, and retrieval pipeline","Backlog ID: CORE-005
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S3
+Priority: P1
+Dependencies: CORE-004
+
+Acceptance Test:
+Voicemail and recordings are accessible from UI and APIs
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p1,sprint:s3",S3
+[PROV-001] Define normalized device profile schema,"Backlog ID: PROV-001
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-002
+
+Acceptance Test:
+Schema approved and used by adapters
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p0,sprint:s1",S1
+[PROV-002] Build adapter SDK and validation harness,"Backlog ID: PROV-002
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S2
+Priority: P0
+Dependencies: PROV-001
+
+Acceptance Test:
+Reference adapter passes all SDK conformance checks
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p0,sprint:s2",S2
+[PROV-003] Implement Yealink and Grandstream adapters,"Backlog ID: PROV-003
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S2
+Priority: P1
+Dependencies: PROV-002
+
+Acceptance Test:
+Zero-touch adopt works for both vendor baselines
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p1,sprint:s2",S2
+"[PROV-004] Implement Fanvil, Poly, and UniFi adapters","Backlog ID: PROV-004
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S3
+Priority: P1
+Dependencies: PROV-002
+
+Acceptance Test:
+Zero-touch adopt works for all listed vendors
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p1,sprint:s3",S3
+[PROV-005] Build device discovery pipeline (DHCP/SIP/UniFi signals),"Backlog ID: PROV-005
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S3
+Priority: P0
+Dependencies: PROV-001
+
+Acceptance Test:
+Unknown phone appears in adoption queue with confidence score
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p0,sprint:s3",S3
+[FWM-001] Define firmware catalog schema and provenance policy,"Backlog ID: FWM-001
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S2
+Priority: P0
+Dependencies: PROG-002
+
+Acceptance Test:
+Catalog entries require hash and signature metadata
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p0,sprint:s2",S2
+"[FWM-002] Build fetch, verify, cache pipeline with quarantine path","Backlog ID: FWM-002
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S3
+Priority: P0
+Dependencies: FWM-001
+
+Acceptance Test:
+Corrupt or unsigned artifacts are blocked automatically
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p0,sprint:s3",S3
+[FWM-003] Implement canary/group/fleet rollout rings,"Backlog ID: FWM-003
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S4
+Priority: P1
+Dependencies: FWM-002
+
+Acceptance Test:
+Rollouts can be staged with policy enforcement
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p1,sprint:s4",S4
+[FWM-004] Implement automated rollback on health failure,"Backlog ID: FWM-004
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S4
+Priority: P0
+Dependencies: FWM-003
+
+Acceptance Test:
+Canary failure triggers rollback and alert within SLA
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p0,sprint:s4",S4
+[UNI-001] Build low-setup controller discovery and auth wizard,"Backlog ID: UNI-001
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S2
+Priority: P0
+Dependencies: PROG-002
+
+Acceptance Test:
+New controller setup succeeds using guided wizard
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p0,sprint:s2",S2
+[UNI-002] Implement two-way extension and device sync,"Backlog ID: UNI-002
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S3
+Priority: P0
+Dependencies: UNI-001
+
+Acceptance Test:
+Sync lag remains below target and state converges
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p0,sprint:s3",S3
+[UNI-003] Implement conflict resolution and reconciliation logs,"Backlog ID: UNI-003
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S4
+Priority: P1
+Dependencies: UNI-002
+
+Acceptance Test:
+Conflict handling is deterministic and auditable
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p1,sprint:s4",S4
+[INS-001] Build VM pipelines for OVA and QCOW2,"Backlog ID: INS-001
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S4
+Priority: P0
+Dependencies: CORE-003
+
+Acceptance Test:
+Install to first call under 30 minutes on target hypervisors
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p0,sprint:s4",S4
+[INS-002] Build baremetal ISO pipeline,"Backlog ID: INS-002
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S5
+Priority: P0
+Dependencies: INS-001
+
+Acceptance Test:
+Installer passes repeatable hardware install tests
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p0,sprint:s5",S5
+[INS-003] Implement first-boot setup wizard,"Backlog ID: INS-003
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S5
+Priority: P1
+Dependencies: INS-001
+
+Acceptance Test:
+No CLI needed for initial system setup
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p1,sprint:s5",S5
+[TEST-001] Create unified test harness and fixtures,"Backlog ID: TEST-001
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-003
+
+Acceptance Test:
+Smoke and regression tests run automatically in CI
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p0,sprint:s1",S1
+[TEST-002] Integrate security testing suite into CI gates,"Backlog ID: TEST-002
+Epic: Testing
+Owner Role: Security Test Lead Agent
+Sprint: S2
+Priority: P0
+Dependencies: TEST-001
+
+Acceptance Test:
+Critical security findings block merges
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:security-test-lead-agent,priority:p0,sprint:s2",S2
+[TEST-003] Build carrier interoperability harness,"Backlog ID: TEST-003
+Epic: Testing
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S3
+Priority: P0
+Dependencies: TEST-001
+
+Acceptance Test:
+Tier 1 carriers pass inbound, outbound, transfer, and DTMF flows
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:carrier-compatibility-lead-agent,priority:p0,sprint:s3",S3
+[TEST-004] Build device and firmware compatibility harness,"Backlog ID: TEST-004
+Epic: Testing
+Owner Role: Device/Firmware Compatibility Lead Agent
+Sprint: S3
+Priority: P0
+Dependencies: TEST-001
+
+Acceptance Test:
+Supported model matrix has reproducible certification reports
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:device/firmware-compatibility-lead-agent,priority:p0,sprint:s3",S3
+"[TEST-005] Run load, soak, and failover drills","Backlog ID: TEST-005
+Epic: Testing
+Owner Role: Performance & Reliability Lead Agent
+Sprint: S4
+Priority: P0
+Dependencies: CORE-003
+
+Acceptance Test:
+SLO targets met for concurrency and failover windows
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:performance-&-reliability-lead-agent,priority:p0,sprint:s4",S4
+[SEC-001] Threat model and privileged action policy,"Backlog ID: SEC-001
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S1
+Priority: P0
+Dependencies: PROG-001
+
+Acceptance Test:
+Threat model approved and privileged actions gated
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p0,sprint:s1",S1
+[SEC-002] Implement audit trail coverage checks,"Backlog ID: SEC-002
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S2
+Priority: P1
+Dependencies: SEC-001
+
+Acceptance Test:
+All admin-impacting actions include complete audit events
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p1,sprint:s2",S2
+"[CARR-001] Certify Tier 1 carriers (Twilio, Bandwidth, Telnyx)","Backlog ID: CARR-001
+Epic: Carrier Compatibility
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S4
+Priority: P0
+Dependencies: TEST-003
+
+Acceptance Test:
+Tier 1 carrier matrix marked certified for launch
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:carrier-compatibility,owner:carrier-compatibility-lead-agent,priority:p0,sprint:s4",S4
+"[CARR-002] Certify Tier 2 carriers (Vonage, Plivo, Flowroute, VoIP.ms)","Backlog ID: CARR-002
+Epic: Carrier Compatibility
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S5
+Priority: P1
+Dependencies: CARR-001
+
+Acceptance Test:
+Tier 2 matrix published with pass rates and caveats
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:carrier-compatibility,owner:carrier-compatibility-lead-agent,priority:p1,sprint:s5",S5
+[DOC-001] Publish operator runbook and rollback playbooks,"Backlog ID: DOC-001
+Epic: Enablement
+Owner Role: Docs & Enablement Agent
+Sprint: S5
+Priority: P1
+Dependencies: TEST-005
+
+Acceptance Test:
+On-call runbook passes tabletop incident exercise
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:enablement,owner:docs-&-enablement-agent,priority:p1,sprint:s5",S5
+[DOC-002] Publish installer and migration guides,"Backlog ID: DOC-002
+Epic: Enablement
+Owner Role: Docs & Enablement Agent
+Sprint: S5
+Priority: P1
+Dependencies: INS-003
+
+Acceptance Test:
+New operator can complete install and migration from docs alone
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:enablement,owner:docs-&-enablement-agent,priority:p1,sprint:s5",S5
+[PROG-004] Define 6-month KPI targets and monthly checkpoints,"Backlog ID: PROG-004
+Epic: Program Setup
+Owner Role: General Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: PROG-003
+
+Acceptance Test:
+KPI dashboard includes monthly target and owner for each metric
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:program-setup,owner:general-manager-agent,priority:p1,sprint:s6",S6
+[CORE-006] Implement attended and blind transfer semantics,"Backlog ID: CORE-006
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: CORE-004
+
+Acceptance Test:
+Transfer flows pass functional and carrier interop tests
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p1,sprint:s6",S6
+[CORE-007] Implement call parking and retrieval runtime hooks,"Backlog ID: CORE-007
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: CORE-004
+
+Acceptance Test:
+Call park and retrieve works from supported desk phones
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p1,sprint:s6",S6
+[CORE-008] Implement paging and intercom call classes,"Backlog ID: CORE-008
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S7
+Priority: P2
+Dependencies: CORE-006
+
+Acceptance Test:
+Page/intercom policies work with role permissions
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p2,sprint:s7",S7
+[CORE-009] Implement emergency call routing policy controls,"Backlog ID: CORE-009
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S7
+Priority: P0
+Dependencies: CORE-003
+
+Acceptance Test:
+Emergency route tests pass with policy and audit logging
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p0,sprint:s7",S7
+[CORE-010] Implement config apply transaction and rollback framework,"Backlog ID: CORE-010
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S7
+Priority: P0
+Dependencies: CORE-005
+
+Acceptance Test:
+Failed config apply auto-reverts with clear operator reason
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p0,sprint:s7",S7
+[CORE-011] Add active-standby runtime mode for HA pilot,"Backlog ID: CORE-011
+Epic: PBX Core
+Owner Role: PBX Core Manager Agent
+Sprint: S8
+Priority: P1
+Dependencies: CORE-010
+
+Acceptance Test:
+Failover drill achieves target recovery interval
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:pbx-core,owner:pbx-core-manager-agent,priority:p1,sprint:s8",S8
+[PROV-006] Add per-vendor template versioning and migration tool,"Backlog ID: PROV-006
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: PROV-004
+
+Acceptance Test:
+Template schema updates can migrate existing fleet safely
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p1,sprint:s6",S6
+"[PROV-007] Add profile policy engine (site, tenant, department)","Backlog ID: PROV-007
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: PROV-001
+
+Acceptance Test:
+Policy resolves to deterministic final device config
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p1,sprint:s6",S6
+[PROV-008] Add mass-adoption workflow for unassigned phones,"Backlog ID: PROV-008
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: PROV-005
+
+Acceptance Test:
+Batch adoption can assign 50 devices without manual edits
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p1,sprint:s7",S7
+[PROV-009] Add provisioning audit and drift detection,"Backlog ID: PROV-009
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S7
+Priority: P0
+Dependencies: PROV-007
+
+Acceptance Test:
+Config drift alerts generated with remediation suggestions
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p0,sprint:s7",S7
+[PROV-010] Validate secure bootstrap defaults for all supported vendors,"Backlog ID: PROV-010
+Epic: Provisioning
+Owner Role: Provisioning Manager Agent
+Sprint: S8
+Priority: P0
+Dependencies: PROV-009
+
+Acceptance Test:
+Default templates pass security and compatibility gates
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:provisioning,owner:provisioning-manager-agent,priority:p0,sprint:s8",S8
+[FWM-005] Add firmware compatibility matrix by vendor/model/revision,"Backlog ID: FWM-005
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S6
+Priority: P0
+Dependencies: FWM-004
+
+Acceptance Test:
+UI blocks incompatible upgrade targets automatically
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p0,sprint:s6",S6
+[FWM-006] Implement maintenance-window scheduling and freeze periods,"Backlog ID: FWM-006
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: FWM-003
+
+Acceptance Test:
+Upgrades only execute in approved policy windows
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p1,sprint:s6",S6
+[FWM-007] Add firmware rollback rehearsals as recurring drills,"Backlog ID: FWM-007
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: FWM-004
+
+Acceptance Test:
+Quarterly rollback rehearsal reports meet recovery targets
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p1,sprint:s7",S7
+[FWM-008] Add firmware provenance reporting and export,"Backlog ID: FWM-008
+Epic: Firmware
+Owner Role: Firmware Manager Agent
+Sprint: S8
+Priority: P2
+Dependencies: FWM-005
+
+Acceptance Test:
+Operator can export signed provenance report per release
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:firmware,owner:firmware-manager-agent,priority:p2,sprint:s8",S8
+[UNI-004] Add relay health dashboard and SLA monitors,"Backlog ID: UNI-004
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: UNI-002
+
+Acceptance Test:
+Relay health metrics visible and alerting configured
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p1,sprint:s6",S6
+[UNI-005] Add idempotent write guards for sync loop,"Backlog ID: UNI-005
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S6
+Priority: P0
+Dependencies: UNI-003
+
+Acceptance Test:
+Repeated sync runs produce no duplicate side effects
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p0,sprint:s6",S6
+[UNI-006] Implement auto-remediation for common drift states,"Backlog ID: UNI-006
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: UNI-005
+
+Acceptance Test:
+Known drift scenarios self-heal and log reconciliation actions
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p1,sprint:s7",S7
+[UNI-007] Certify multi-site UniFi controller deployments,"Backlog ID: UNI-007
+Epic: UniFi Relay
+Owner Role: UniFi Relay Manager Agent
+Sprint: S8
+Priority: P1
+Dependencies: UNI-006
+
+Acceptance Test:
+Multi-site mapping passes discovery and sync regression suites
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:unifi-relay,owner:unifi-relay-manager-agent,priority:p1,sprint:s8",S8
+[INS-004] Add cloud-init and unattended install profiles,"Backlog ID: INS-004
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: INS-003
+
+Acceptance Test:
+Unattended install completes without manual prompts
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p1,sprint:s6",S6
+[INS-005] Add secure secret bootstrap and rotation initialization,"Backlog ID: INS-005
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S6
+Priority: P0
+Dependencies: INS-003
+
+Acceptance Test:
+Fresh installs meet secret management baseline policy
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p0,sprint:s6",S6
+[INS-006] Build installer upgrade path test harness,"Backlog ID: INS-006
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: INS-002
+
+Acceptance Test:
+In-place upgrades preserve config and service continuity
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p1,sprint:s7",S7
+[INS-007] Build hardware compatibility certification matrix,"Backlog ID: INS-007
+Epic: Installer
+Owner Role: Installer Manager Agent
+Sprint: S8
+Priority: P1
+Dependencies: INS-002
+
+Acceptance Test:
+Supported baremetal matrix published with pass criteria
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:installer,owner:installer-manager-agent,priority:p1,sprint:s8",S8
+[TEST-006] Build release-blocking smoke suite for call critical path,"Backlog ID: TEST-006
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S6
+Priority: P0
+Dependencies: TEST-001
+
+Acceptance Test:
+Every release candidate passes critical-path smoke checks
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p0,sprint:s6",S6
+[TEST-007] Automate nightly regression matrix for carriers and devices,"Backlog ID: TEST-007
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S7
+Priority: P0
+Dependencies: TEST-003
+
+Acceptance Test:
+Nightly runs publish trend report and blocker list
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p0,sprint:s7",S7
+[TEST-008] Create deterministic defect severity policy,"Backlog ID: TEST-008
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: PROG-003
+
+Acceptance Test:
+Severity rubric adopted and reflected in issue labels
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p1,sprint:s6",S6
+[TEST-009] Implement environment parity checks for staging versus prod,"Backlog ID: TEST-009
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: TEST-006
+
+Acceptance Test:
+Parity report highlights config drift before release
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p1,sprint:s7",S7
+[TEST-010] Implement quarterly disaster recovery simulation,"Backlog ID: TEST-010
+Epic: Testing
+Owner Role: QA Test Manager Agent
+Sprint: S8
+Priority: P1
+Dependencies: TEST-005
+
+Acceptance Test:
+DR simulation meets approved RTO and RPO targets
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:testing,owner:qa-test-manager-agent,priority:p1,sprint:s8",S8
+"[SEC-003] Implement SAST, DAST, and dependency scan quality gates","Backlog ID: SEC-003
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S6
+Priority: P0
+Dependencies: TEST-002
+
+Acceptance Test:
+Critical findings automatically block merge and release
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p0,sprint:s6",S6
+[SEC-004] Validate RBAC matrix for all privileged workflows,"Backlog ID: SEC-004
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S6
+Priority: P0
+Dependencies: SEC-001
+
+Acceptance Test:
+Unauthorized attempts are denied and auditable
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p0,sprint:s6",S6
+[SEC-005] Implement secret detection and remediation workflow,"Backlog ID: SEC-005
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S7
+Priority: P1
+Dependencies: SEC-003
+
+Acceptance Test:
+Leaked secret simulation triggers full remediation playbook
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p1,sprint:s7",S7
+[SEC-006] Conduct external penetration test readiness cycle,"Backlog ID: SEC-006
+Epic: Security
+Owner Role: Security Test Lead Agent
+Sprint: S8
+Priority: P1
+Dependencies: SEC-004
+
+Acceptance Test:
+All high findings resolved or risk-accepted by owner
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:security,owner:security-test-lead-agent,priority:p1,sprint:s8",S8
+[CARR-003] Certify Tier 3 carrier backlog candidates,"Backlog ID: CARR-003
+Epic: Carrier Compatibility
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S7
+Priority: P2
+Dependencies: CARR-002
+
+Acceptance Test:
+Tier 3 matrix published with support caveats
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:carrier-compatibility,owner:carrier-compatibility-lead-agent,priority:p2,sprint:s7",S7
+[CARR-004] Implement per-carrier policy presets in trunk wizard,"Backlog ID: CARR-004
+Epic: Carrier Compatibility
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S7
+Priority: P1
+Dependencies: CARR-001
+
+Acceptance Test:
+Preset defaults reduce setup errors in pilot telemetry
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:carrier-compatibility,owner:carrier-compatibility-lead-agent,priority:p1,sprint:s7",S7
+[CARR-005] Add SIP ladder capture automation for failed interop tests,"Backlog ID: CARR-005
+Epic: Carrier Compatibility
+Owner Role: Carrier Compatibility Lead Agent
+Sprint: S8
+Priority: P1
+Dependencies: TEST-003
+
+Acceptance Test:
+Failed cases include reproducible ladder traces
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:carrier-compatibility,owner:carrier-compatibility-lead-agent,priority:p1,sprint:s8",S8
+[DEV-001] Create official supported model catalog and lifecycle states,"Backlog ID: DEV-001
+Epic: Device Compatibility
+Owner Role: Device/Firmware Compatibility Lead Agent
+Sprint: S6
+Priority: P0
+Dependencies: TEST-004
+
+Acceptance Test:
+Model catalog includes status and support policy dates
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:device-compatibility,owner:device/firmware-compatibility-lead-agent,priority:p0,sprint:s6",S6
+[DEV-002] Automate model promotion from candidate to supported,"Backlog ID: DEV-002
+Epic: Device Compatibility
+Owner Role: Device/Firmware Compatibility Lead Agent
+Sprint: S7
+Priority: P1
+Dependencies: DEV-001
+
+Acceptance Test:
+Promotion requires full pass evidence and signoff
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:device-compatibility,owner:device/firmware-compatibility-lead-agent,priority:p1,sprint:s7",S7
+[DEV-003] Run monthly firmware regression certification,"Backlog ID: DEV-003
+Epic: Device Compatibility
+Owner Role: Device/Firmware Compatibility Lead Agent
+Sprint: S8
+Priority: P1
+Dependencies: DEV-002
+
+Acceptance Test:
+Monthly report generated and published without manual steps
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:device-compatibility,owner:device/firmware-compatibility-lead-agent,priority:p1,sprint:s8",S8
+[PERF-001] Define capacity model and initial SLO thresholds,"Backlog ID: PERF-001
+Epic: Performance
+Owner Role: Performance & Reliability Lead Agent
+Sprint: S6
+Priority: P0
+Dependencies: TEST-005
+
+Acceptance Test:
+Capacity report approved by GM and engineering lead
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:performance,owner:performance-&-reliability-lead-agent,priority:p0,sprint:s6",S6
+[PERF-002] Run long-duration soak tests with alert validation,"Backlog ID: PERF-002
+Epic: Performance
+Owner Role: Performance & Reliability Lead Agent
+Sprint: S7
+Priority: P0
+Dependencies: PERF-001
+
+Acceptance Test:
+Soak tests pass with no unresolved critical incidents
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:performance,owner:performance-&-reliability-lead-agent,priority:p0,sprint:s7",S7
+[PERF-003] Implement failover chaos drill automation,"Backlog ID: PERF-003
+Epic: Performance
+Owner Role: Performance & Reliability Lead Agent
+Sprint: S8
+Priority: P1
+Dependencies: CORE-011
+
+Acceptance Test:
+Chaos drills execute automatically and produce actionable reports
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:performance,owner:performance-&-reliability-lead-agent,priority:p1,sprint:s8",S8
+[OPS-001] Implement centralized observability dashboards,"Backlog ID: OPS-001
+Epic: Operations
+Owner Role: Chief Orchestrator Agent
+Sprint: S6
+Priority: P1
+Dependencies: TEST-006
+
+Acceptance Test:
+Dashboards cover call path
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:operations,owner:chief-orchestrator-agent,priority:p1,sprint:s6",S6
+[OPS-002] Define on-call rotation and incident playbooks,"Backlog ID: OPS-002
+Epic: Operations
+Owner Role: General Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: DOC-001
+
+Acceptance Test:
+On-call schedule live and incident runbook approved
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:operations,owner:general-manager-agent,priority:p1,sprint:s6",S6
+[OPS-003] Implement incident postmortem template and SLA,"Backlog ID: OPS-003
+Epic: Operations
+Owner Role: Chief Orchestrator Agent
+Sprint: S7
+Priority: P1
+Dependencies: OPS-002
+
+Acceptance Test:
+All Sev1 and Sev2 incidents produce signed postmortems
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:operations,owner:chief-orchestrator-agent,priority:p1,sprint:s7",S7
+[REL-001] Define semantic versioning and migration policy,"Backlog ID: REL-001
+Epic: Release
+Owner Role: General Manager Agent
+Sprint: S6
+Priority: P1
+Dependencies: PROG-004
+
+Acceptance Test:
+All release artifacts follow defined version/migration scheme
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:release,owner:general-manager-agent,priority:p1,sprint:s6",S6
+[REL-002] Implement release candidate checklist automation,"Backlog ID: REL-002
+Epic: Release
+Owner Role: QA Test Manager Agent
+Sprint: S7
+Priority: P1
+Dependencies: TEST-007
+
+Acceptance Test:
+RC checklist generated and attached to each release candidate
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:release,owner:qa-test-manager-agent,priority:p1,sprint:s7",S7
+[REL-003] Run beta program with design partners,"Backlog ID: REL-003
+Epic: Release
+Owner Role: General Manager Agent
+Sprint: S8
+Priority: P1
+Dependencies: REL-001
+
+Acceptance Test:
+Beta cohort feedback collected and top blockers triaged
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:release,owner:general-manager-agent,priority:p1,sprint:s8",S8
+[REL-004] Prepare GA readiness packet and go/no-go review,"Backlog ID: REL-004
+Epic: Release
+Owner Role: General Manager Agent
+Sprint: S9
+Priority: P0
+Dependencies: REL-003
+
+Acceptance Test:
+GA review completed with explicit risk acceptance
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:release,owner:general-manager-agent,priority:p0,sprint:s9",S9
+[GTM-001] Define support tiers and escalation boundaries,"Backlog ID: GTM-001
+Epic: Go To Market
+Owner Role: General Manager Agent
+Sprint: S8
+Priority: P2
+Dependencies: PROG-004
+
+Acceptance Test:
+Support tier matrix approved and published internally
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:go-to-market,owner:general-manager-agent,priority:p2,sprint:s8",S8
+[GTM-002] Publish admin onboarding and quickstart curriculum,"Backlog ID: GTM-002
+Epic: Go To Market
+Owner Role: Docs & Enablement Agent
+Sprint: S9
+Priority: P2
+Dependencies: DOC-002
+
+Acceptance Test:
+New admin can complete onboarding within target time
+
+Definition of Done:
+1. Code merged with linked tests
+2. Rollback note documented
+3. Test evidence attached","epic:go-to-market,owner:docs-&-enablement-agent,priority:p2,sprint:s9",S9

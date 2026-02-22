@@ -33,3 +33,54 @@ CARR-001,Carrier Compatibility,"Certify Tier 1 carriers (Twilio, Bandwidth, Teln
 CARR-002,Carrier Compatibility,"Certify Tier 2 carriers (Vonage, Plivo, Flowroute, VoIP.ms)",Carrier Compatibility Lead Agent,S5,P1,CARR-001,Tier 2 matrix published with pass rates and caveats,Planned
 DOC-001,Enablement,"Publish operator runbook and rollback playbooks",Docs & Enablement Agent,S5,P1,TEST-005,On-call runbook passes tabletop incident exercise,Planned
 DOC-002,Enablement,"Publish installer and migration guides",Docs & Enablement Agent,S5,P1,INS-003,New operator can complete install and migration from docs alone,Planned
+PROG-004,Program Setup,"Define 6-month KPI targets and monthly checkpoints",General Manager Agent,S6,P1,PROG-003,KPI dashboard includes monthly target and owner for each metric,Planned
+CORE-006,PBX Core,"Implement attended and blind transfer semantics",PBX Core Manager Agent,S6,P1,CORE-004,Transfer flows pass functional and carrier interop tests,Planned
+CORE-007,PBX Core,"Implement call parking and retrieval runtime hooks",PBX Core Manager Agent,S6,P1,CORE-004,Call park and retrieve works from supported desk phones,Planned
+CORE-008,PBX Core,"Implement paging and intercom call classes",PBX Core Manager Agent,S7,P2,CORE-006,Page/intercom policies work with role permissions,Planned
+CORE-009,PBX Core,"Implement emergency call routing policy controls",PBX Core Manager Agent,S7,P0,CORE-003,Emergency route tests pass with policy and audit logging,Planned
+CORE-010,PBX Core,"Implement config apply transaction and rollback framework",PBX Core Manager Agent,S7,P0,CORE-005,Failed config apply auto-reverts with clear operator reason,Planned
+CORE-011,PBX Core,"Add active-standby runtime mode for HA pilot",PBX Core Manager Agent,S8,P1,CORE-010,Failover drill achieves target recovery interval,Planned
+PROV-006,Provisioning,"Add per-vendor template versioning and migration tool",Provisioning Manager Agent,S6,P1,PROV-004,Template schema updates can migrate existing fleet safely,Planned
+PROV-007,Provisioning,"Add profile policy engine (site, tenant, department)",Provisioning Manager Agent,S6,P1,PROV-001,Policy resolves to deterministic final device config,Planned
+PROV-008,Provisioning,"Add mass-adoption workflow for unassigned phones",Provisioning Manager Agent,S7,P1,PROV-005,Batch adoption can assign 50 devices without manual edits,Planned
+PROV-009,Provisioning,"Add provisioning audit and drift detection",Provisioning Manager Agent,S7,P0,PROV-007,Config drift alerts generated with remediation suggestions,Planned
+PROV-010,Provisioning,"Validate secure bootstrap defaults for all supported vendors",Provisioning Manager Agent,S8,P0,PROV-009,Default templates pass security and compatibility gates,Planned
+FWM-005,Firmware,"Add firmware compatibility matrix by vendor/model/revision",Firmware Manager Agent,S6,P0,FWM-004,UI blocks incompatible upgrade targets automatically,Planned
+FWM-006,Firmware,"Implement maintenance-window scheduling and freeze periods",Firmware Manager Agent,S6,P1,FWM-003,Upgrades only execute in approved policy windows,Planned
+FWM-007,Firmware,"Add firmware rollback rehearsals as recurring drills",Firmware Manager Agent,S7,P1,FWM-004,Quarterly rollback rehearsal reports meet recovery targets,Planned
+FWM-008,Firmware,"Add firmware provenance reporting and export",Firmware Manager Agent,S8,P2,FWM-005,Operator can export signed provenance report per release,Planned
+UNI-004,UniFi Relay,"Add relay health dashboard and SLA monitors",UniFi Relay Manager Agent,S6,P1,UNI-002,Relay health metrics visible and alerting configured,Planned
+UNI-005,UniFi Relay,"Add idempotent write guards for sync loop",UniFi Relay Manager Agent,S6,P0,UNI-003,Repeated sync runs produce no duplicate side effects,Planned
+UNI-006,UniFi Relay,"Implement auto-remediation for common drift states",UniFi Relay Manager Agent,S7,P1,UNI-005,Known drift scenarios self-heal and log reconciliation actions,Planned
+UNI-007,UniFi Relay,"Certify multi-site UniFi controller deployments",UniFi Relay Manager Agent,S8,P1,UNI-006,Multi-site mapping passes discovery and sync regression suites,Planned
+INS-004,Installer,"Add cloud-init and unattended install profiles",Installer Manager Agent,S6,P1,INS-003,Unattended install completes without manual prompts,Planned
+INS-005,Installer,"Add secure secret bootstrap and rotation initialization",Installer Manager Agent,S6,P0,INS-003,Fresh installs meet secret management baseline policy,Planned
+INS-006,Installer,"Build installer upgrade path test harness",Installer Manager Agent,S7,P1,INS-002,In-place upgrades preserve config and service continuity,Planned
+INS-007,Installer,"Build hardware compatibility certification matrix",Installer Manager Agent,S8,P1,INS-002,Supported baremetal matrix published with pass criteria,Planned
+TEST-006,Testing,"Build release-blocking smoke suite for call critical path",QA Test Manager Agent,S6,P0,TEST-001,Every release candidate passes critical-path smoke checks,Planned
+TEST-007,Testing,"Automate nightly regression matrix for carriers and devices",QA Test Manager Agent,S7,P0,TEST-003,Nightly runs publish trend report and blocker list,Planned
+TEST-008,Testing,"Create deterministic defect severity policy",QA Test Manager Agent,S6,P1,PROG-003,Severity rubric adopted and reflected in issue labels,Planned
+TEST-009,Testing,"Implement environment parity checks for staging versus prod",QA Test Manager Agent,S7,P1,TEST-006,Parity report highlights config drift before release,Planned
+TEST-010,Testing,"Implement quarterly disaster recovery simulation",QA Test Manager Agent,S8,P1,TEST-005,DR simulation meets approved RTO and RPO targets,Planned
+SEC-003,Security,"Implement SAST, DAST, and dependency scan quality gates",Security Test Lead Agent,S6,P0,TEST-002,Critical findings automatically block merge and release,Planned
+SEC-004,Security,"Validate RBAC matrix for all privileged workflows",Security Test Lead Agent,S6,P0,SEC-001,Unauthorized attempts are denied and auditable,Planned
+SEC-005,Security,"Implement secret detection and remediation workflow",Security Test Lead Agent,S7,P1,SEC-003,Leaked secret simulation triggers full remediation playbook,Planned
+SEC-006,Security,"Conduct external penetration test readiness cycle",Security Test Lead Agent,S8,P1,SEC-004,All high findings resolved or risk-accepted by owner,Planned
+CARR-003,Carrier Compatibility,"Certify Tier 3 carrier backlog candidates",Carrier Compatibility Lead Agent,S7,P2,CARR-002,Tier 3 matrix published with support caveats,Planned
+CARR-004,Carrier Compatibility,"Implement per-carrier policy presets in trunk wizard",Carrier Compatibility Lead Agent,S7,P1,CARR-001,Preset defaults reduce setup errors in pilot telemetry,Planned
+CARR-005,Carrier Compatibility,"Add SIP ladder capture automation for failed interop tests",Carrier Compatibility Lead Agent,S8,P1,TEST-003,Failed cases include reproducible ladder traces,Planned
+DEV-001,Device Compatibility,"Create official supported model catalog and lifecycle states",Device/Firmware Compatibility Lead Agent,S6,P0,TEST-004,Model catalog includes status and support policy dates,Planned
+DEV-002,Device Compatibility,"Automate model promotion from candidate to supported",Device/Firmware Compatibility Lead Agent,S7,P1,DEV-001,Promotion requires full pass evidence and signoff,Planned
+DEV-003,Device Compatibility,"Run monthly firmware regression certification",Device/Firmware Compatibility Lead Agent,S8,P1,DEV-002,Monthly report generated and published without manual steps,Planned
+PERF-001,Performance,"Define capacity model and initial SLO thresholds",Performance & Reliability Lead Agent,S6,P0,TEST-005,Capacity report approved by GM and engineering lead,Planned
+PERF-002,Performance,"Run long-duration soak tests with alert validation",Performance & Reliability Lead Agent,S7,P0,PERF-001,Soak tests pass with no unresolved critical incidents,Planned
+PERF-003,Performance,"Implement failover chaos drill automation",Performance & Reliability Lead Agent,S8,P1,CORE-011,Chaos drills execute automatically and produce actionable reports,Planned
+OPS-001,Operations,"Implement centralized observability dashboards",Chief Orchestrator Agent,S6,P1,TEST-006,Dashboards cover call path, provisioning, firmware, installer health,Planned
+OPS-002,Operations,"Define on-call rotation and incident playbooks",General Manager Agent,S6,P1,DOC-001,On-call schedule live and incident runbook approved,Planned
+OPS-003,Operations,"Implement incident postmortem template and SLA",Chief Orchestrator Agent,S7,P1,OPS-002,All Sev1 and Sev2 incidents produce signed postmortems,Planned
+REL-001,Release,"Define semantic versioning and migration policy",General Manager Agent,S6,P1,PROG-004,All release artifacts follow defined version/migration scheme,Planned
+REL-002,Release,"Implement release candidate checklist automation",QA Test Manager Agent,S7,P1,TEST-007,RC checklist generated and attached to each release candidate,Planned
+REL-003,Release,"Run beta program with design partners",General Manager Agent,S8,P1,REL-001,Beta cohort feedback collected and top blockers triaged,Planned
+REL-004,Release,"Prepare GA readiness packet and go/no-go review",General Manager Agent,S9,P0,REL-003,GA review completed with explicit risk acceptance,Planned
+GTM-001,Go To Market,"Define support tiers and escalation boundaries",General Manager Agent,S8,P2,PROG-004,Support tier matrix approved and published internally,Planned
+GTM-002,Go To Market,"Publish admin onboarding and quickstart curriculum",Docs & Enablement Agent,S9,P2,DOC-002,New admin can complete onboarding within target time,Planned

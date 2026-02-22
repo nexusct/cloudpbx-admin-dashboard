@@ -8,6 +8,7 @@ import * as twilio from "./providers/twilio";
 import * as google from "./providers/google";
 import * as unifi from "./providers/unifi";
 import * as rcare from "./providers/rcare";
+import * as pbxinaflash from "./providers/pbxinaflash";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -295,6 +296,19 @@ export function registerIntegrationRoutes(app: Express) {
           });
           break;
         }
+        case "pbx-in-a-flash": {
+          if (!connection.instanceUrl || !extra.username || !extra.applicationPassword) {
+            return res.status(400).json({ error: "PBX host, AMI username, and secret are required" });
+          }
+          const port = extra.port ? parseInt(extra.port) : 5038;
+          testResult = await pbxinaflash.testConnection({
+            host: connection.instanceUrl,
+            port,
+            username: extra.username,
+            secret: extra.applicationPassword
+          });
+          break;
+        }
         default:
           return res.status(400).json({ error: "Direct connect not supported. Use OAuth authorization." });
       }
@@ -412,6 +426,17 @@ export function registerIntegrationRoutes(app: Express) {
         const data = await rcare.syncData(rConfig);
         await storage.updateIntegrationConnection(connection.id, { lastSyncAt: new Date(), syncStatus: "synced" });
         return res.json({ provider: "rcare", ...data });
+      }
+
+      if (slug === "pbx-in-a-flash") {
+        if (!connection.instanceUrl || !extra.username || !extra.applicationPassword) {
+          return res.status(400).json({ error: "PBX credentials not configured" });
+        }
+        const port = extra.port ? parseInt(extra.port) : 5038;
+        const config = { host: connection.instanceUrl, port, username: extra.username, secret: extra.applicationPassword };
+        const data = await pbxinaflash.syncData(config);
+        await storage.updateIntegrationConnection(connection.id, { lastSyncAt: new Date(), syncStatus: "synced" });
+        return res.json({ provider: "pbx-in-a-flash", ...data });
       }
 
       if (slug.startsWith("unifi-")) {
@@ -596,6 +621,18 @@ export function registerIntegrationRoutes(app: Express) {
             testResult = await rcare.testConnection({
               cubeUrl: extra.cubeUrl, apiKey: extra.apiKey,
               username: extra.username, password: extra.applicationPassword,
+            });
+          }
+          break;
+        }
+        case "pbx-in-a-flash": {
+          if (!connection.instanceUrl || !extra.username || !extra.applicationPassword) {
+            testResult = { success: false, error: "PBX credentials not configured" };
+          } else {
+            const port = extra.port ? parseInt(extra.port) : 5038;
+            testResult = await pbxinaflash.testConnection({
+              host: connection.instanceUrl, port,
+              username: extra.username, secret: extra.applicationPassword,
             });
           }
           break;

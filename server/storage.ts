@@ -1,4 +1,4 @@
-import { 
+import {
   type User, type InsertUser,
   type Extension, type InsertExtension,
   type Did, type InsertDid,
@@ -926,6 +926,7 @@ export class DatabaseStorage implements IStorage {
         { name: "UniFi Access", slug: "unifi-access", category: "UniFi", description: "Integrate door access control with your phone system. Trigger door unlocks from calls, log access events, and manage visitor entry.", icon: "Shield", status: "available", popular: true, features: ["Door unlock via call", "Access logs", "Visitor management", "Intercom integration", "Schedule-based access", "Badge management", "Emergency lockdown", "Multi-site access"] },
         { name: "UniFi Protect", slug: "unifi-protect", category: "UniFi", description: "View camera feeds from phone extensions, trigger recordings on call events, and integrate motion alerts with call routing.", icon: "Video", status: "available", popular: true, features: ["Live camera feeds", "Motion-triggered calls", "Recording management", "Smart detection alerts", "Doorbell integration", "Timeline view", "Camera groups", "Privacy zones", "Event notifications"] },
         { name: "RCare Nurse Call", slug: "rcare", category: "Healthcare", description: "Full integration with RCare nurse call systems. Route alarms to extensions, manage incidents, map devices to rooms, and receive real-time notifications from the RCare Cube.", icon: "HeartPulse", status: "available", popular: true, features: ["Alarm routing to extensions", "Incident management", "Device-to-extension mapping", "Real-time notifications", "Zone/view management", "Alarm acknowledgment", "Escalation rules", "ADL logging", "Resident directory", "Call-triggered alerts"] },
+        { name: "PBX in a Flash", slug: "pbx-in-a-flash", category: "PBX Engine", description: "Connect to your Asterisk or FreePBX server to sync extensions, monitor presence, and generate configuration.", icon: "Server", status: "available", popular: true, features: ["Sync Extensions", "Monitor Status", "Generate Config"] }
       ];
       for (const integration of integrationsData) {
         await this.createIntegration(integration);
