@@ -81,6 +81,7 @@ We provide extensive documentation for system administrators, developers, and ad
 
 - **[Architecture & Structure](docs/architecture.md)** - Understand the codebase (client/server), tech stack, and data flow.
 - **[Adding New Integrations](docs/integrations/overview.md)** - Learn how to build plugins for new PBX systems.
+- **[Polymarket Trading System](docs/trading-system.md)** - Operate the agentic prediction-market trading subsystem.
 
 ### Integration Guides
 

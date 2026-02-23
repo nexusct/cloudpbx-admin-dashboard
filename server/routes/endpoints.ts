@@ -1,25 +1,8 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import OpenAI from "openai";
-import { registerIntegrationRoutes } from "./integrations/index";
-import { registerTradingRoutes } from "./trading/routes";
+import { storage } from "../storage";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
-
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-
-  await storage.seedInitialData();
-
-  registerIntegrationRoutes(app);
-  await registerTradingRoutes(app);
-
+export function registerEndpointRoutes(app: Express) {
+  // Extensions
   app.get("/api/extensions", async (req, res) => {
     const extensions = await storage.getExtensions();
     res.json(extensions);
@@ -60,6 +43,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // DIDs
   app.get("/api/dids", async (req, res) => {
     const dids = await storage.getDids();
     res.json(dids);
@@ -100,6 +84,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Call Flows
   app.get("/api/call-flows", async (req, res) => {
     const callFlows = await storage.getCallFlows();
     res.json(callFlows);
@@ -143,6 +128,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Devices
   app.get("/api/devices", async (req, res) => {
     const devices = await storage.getDevices();
     res.json(devices);
@@ -185,6 +171,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Call Logs
   app.get("/api/call-logs", async (req, res) => {
     const callLogs = await storage.getCallLogs();
     res.json(callLogs);
@@ -211,6 +198,7 @@ export async function registerRoutes(
     }
   });
 
+  // SMS
   app.get("/api/sms", async (req, res) => {
     const smsMessages = await storage.getSmsMessages();
     res.json(smsMessages);
@@ -228,6 +216,7 @@ export async function registerRoutes(
     }
   });
 
+  // Fax
   app.get("/api/fax", async (req, res) => {
     const faxMessages = await storage.getFaxMessages();
     res.json(faxMessages);
@@ -245,6 +234,7 @@ export async function registerRoutes(
     }
   });
 
+  // Ring Groups
   app.get("/api/ring-groups", async (req, res) => {
     const ringGroups = await storage.getRingGroups();
     res.json(ringGroups);
@@ -288,6 +278,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Call Queues
   app.get("/api/call-queues", async (req, res) => {
     const callQueues = await storage.getCallQueues();
     res.json(callQueues);
@@ -331,122 +322,7 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
-  app.get("/api/ai/sessions", async (req, res) => {
-    const sessions = await storage.getAiSessions();
-    res.json(sessions);
-  });
-
-  app.post("/api/ai/sessions", async (req, res) => {
-    const session = await storage.createAiSession(req.body);
-    res.status(201).json(session);
-  });
-
-  app.get("/api/ai/sessions/:id", async (req, res) => {
-    const session = await storage.getAiSession(parseInt(req.params.id));
-    if (!session) return res.status(404).json({ error: "Session not found" });
-    res.json(session);
-  });
-
-  app.get("/api/ai/sessions/:id/messages", async (req, res) => {
-    const messages = await storage.getAiMessages(parseInt(req.params.id));
-    res.json(messages);
-  });
-
-  app.post("/api/ai/sessions/:id/messages", async (req, res) => {
-    const sessionId = parseInt(req.params.id);
-    const session = await storage.getAiSession(sessionId);
-    if (!session) return res.status(404).json({ error: "Session not found" });
-
-    const userMessage = await storage.createAiMessage({
-      sessionId,
-      role: "user",
-      content: req.body.content,
-    });
-
-    const messages = await storage.getAiMessages(sessionId);
-
-    const systemPrompt = `You are CloudPBX AI Assistant, an expert in enterprise phone system setup, configuration, and troubleshooting. You help users with:
-- Setting up extensions, DIDs, and phone numbers
-- Configuring IVR menus and call flows
-- Managing devices and handsets
-- Troubleshooting call quality and connectivity issues
-- Configuring integrations with third-party apps
-- Setting up ring groups and call queues
-
-Be helpful, concise, and provide step-by-step guidance when needed. If users need to perform actions, guide them to the appropriate section in the sidebar.`;
-
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages.map(m => ({ role: m.role as "user" | "assistant", content: m.content })),
-        ],
-        max_completion_tokens: 1024,
-      });
-
-      const assistantContent = completion.choices[0]?.message?.content || "I apologize, but I couldn't generate a response. Please try again.";
-
-      const assistantMessage = await storage.createAiMessage({
-        sessionId,
-        role: "assistant",
-        content: assistantContent,
-      });
-
-      res.json({ userMessage, assistantMessage });
-    } catch (error) {
-      console.error("OpenAI API error:", error);
-      res.status(500).json({ error: "Failed to generate AI response" });
-    }
-  });
-
-  app.get("/api/settings", async (req, res) => {
-    const settings = await storage.getSystemSettings();
-    res.json(settings);
-  });
-
-  app.get("/api/settings/:key", async (req, res) => {
-    const setting = await storage.getSystemSetting(req.params.key);
-    if (!setting) return res.status(404).json({ error: "Setting not found" });
-    res.json(setting);
-  });
-
-  app.put("/api/settings/:key", async (req, res) => {
-    const setting = await storage.updateSystemSetting(req.params.key, req.body.value);
-    res.json(setting);
-  });
-
-  app.get("/api/dashboard/stats", async (req, res) => {
-    const extensions = await storage.getExtensions();
-    const dids = await storage.getDids();
-    const ringGroups = await storage.getRingGroups();
-    const callQueues = await storage.getCallQueues();
-    const callLogs = await storage.getCallLogs();
-    const smsMessages = await storage.getSmsMessages();
-
-    const activeCalls = extensions.filter(e => e.status === "busy").length;
-    const missedCalls = callLogs.filter(l => l.status === "missed").length;
-    const answeredCalls = callLogs.filter(l => l.status === "answered" && l.duration && l.duration > 0);
-    const totalDuration = answeredCalls.reduce((sum, l) => sum + (l.duration || 0), 0);
-    const avgSeconds = answeredCalls.length > 0 ? Math.round(totalDuration / answeredCalls.length) : 0;
-    const avgMins = Math.floor(avgSeconds / 60);
-    const avgSecs = avgSeconds % 60;
-
-    res.json({
-      totalCalls: callLogs.length,
-      activeCalls,
-      extensionsOnline: extensions.filter(e => e.status === "online" || e.status === "busy").length,
-      totalExtensions: extensions.length,
-      missedCalls,
-      avgCallDuration: `${avgMins}m ${avgSecs.toString().padStart(2, "0")}s`,
-      smsToday: smsMessages.length,
-      systemUptime: "99.97%",
-      totalDids: dids.length,
-      totalRingGroups: ringGroups.length,
-      totalQueues: callQueues.length,
-    });
-  });
-
+  // Connect Contacts
   app.get("/api/contacts", async (req, res) => {
     const contacts = await storage.getContacts();
     res.json(contacts);
@@ -487,6 +363,7 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(204).send();
   });
 
+  // Voicemails
   app.get("/api/voicemails", async (req, res) => {
     const extensionId = req.query.extensionId ? parseInt(req.query.extensionId as string) : undefined;
     const voicemails = await storage.getVoicemails(extensionId);
@@ -511,6 +388,18 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(204).send();
   });
 
+  app.post("/api/voicemails", async (req, res) => {
+    try {
+      const { insertVoicemailSchema } = await import("@shared/schema");
+      const validatedData = insertVoicemailSchema.parse(req.body);
+      const voicemail = await storage.createVoicemail(validatedData);
+      res.status(201).json(voicemail);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid request data" });
+    }
+  });
+
+  // Routing Rules
   app.get("/api/routing-rules", async (req, res) => {
     const rules = await storage.getRoutingRules();
     res.json(rules);
@@ -551,6 +440,7 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(204).send();
   });
 
+  // Webhooks
   app.get("/api/webhooks", async (req, res) => {
     const webhooks = await storage.getWebhooks();
     res.json(webhooks);
@@ -588,226 +478,6 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
   app.delete("/api/webhooks/:id", async (req, res) => {
     const deleted = await storage.deleteWebhook(parseInt(req.params.id));
     if (!deleted) return res.status(404).json({ error: "Webhook not found" });
-    res.status(204).send();
-  });
-
-  app.get("/api/agent-status", async (req, res) => {
-    const statuses = await storage.getAgentStatuses();
-    res.json(statuses);
-  });
-
-  app.get("/api/queue-stats", async (req, res) => {
-    const stats = await storage.getQueueStats();
-    res.json(stats);
-  });
-
-  app.get("/api/parking-slots", async (req, res) => {
-    const slots = await storage.getParkingSlots();
-    res.json(slots);
-  });
-
-  // Integrations
-  app.get("/api/integrations", async (req, res) => {
-    const allIntegrations = await storage.getIntegrations();
-    res.json(allIntegrations);
-  });
-
-  app.get("/api/integrations/:id", async (req, res) => {
-    const integration = await storage.getIntegration(parseInt(req.params.id));
-    if (!integration) return res.status(404).json({ error: "Integration not found" });
-    res.json(integration);
-  });
-
-  app.post("/api/integrations", async (req, res) => {
-    try {
-      const { insertIntegrationSchema } = await import("@shared/schema");
-      const validatedData = insertIntegrationSchema.parse(req.body);
-      const integration = await storage.createIntegration(validatedData);
-      res.status(201).json(integration);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/integrations/:id", async (req, res) => {
-    try {
-      const { insertIntegrationSchema } = await import("@shared/schema");
-      const validatedData = insertIntegrationSchema.partial().parse(req.body);
-      const integration = await storage.updateIntegration(parseInt(req.params.id), validatedData);
-      if (!integration) return res.status(404).json({ error: "Integration not found" });
-      res.json(integration);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/integrations/:id", async (req, res) => {
-    const deleted = await storage.deleteIntegration(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "Integration not found" });
-    res.status(204).send();
-  });
-
-  // SIP Providers
-  app.get("/api/sip-providers", async (req, res) => {
-    const providers = await storage.getSipProviders();
-    res.json(providers);
-  });
-
-  app.get("/api/sip-providers/:id", async (req, res) => {
-    const provider = await storage.getSipProvider(parseInt(req.params.id));
-    if (!provider) return res.status(404).json({ error: "SIP provider not found" });
-    res.json(provider);
-  });
-
-  app.post("/api/sip-providers", async (req, res) => {
-    try {
-      const { insertSipProviderSchema } = await import("@shared/schema");
-      const validatedData = insertSipProviderSchema.parse(req.body);
-      const provider = await storage.createSipProvider(validatedData);
-      res.status(201).json(provider);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/sip-providers/:id", async (req, res) => {
-    try {
-      const { insertSipProviderSchema } = await import("@shared/schema");
-      const validatedData = insertSipProviderSchema.partial().parse(req.body);
-      const provider = await storage.updateSipProvider(parseInt(req.params.id), validatedData);
-      if (!provider) return res.status(404).json({ error: "SIP provider not found" });
-      res.json(provider);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/sip-providers/:id", async (req, res) => {
-    const deleted = await storage.deleteSipProvider(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "SIP provider not found" });
-    res.status(204).send();
-  });
-
-  // SIP Trunks
-  app.get("/api/sip-trunks", async (req, res) => {
-    const trunks = await storage.getSipTrunks();
-    res.json(trunks);
-  });
-
-  app.get("/api/sip-trunks/:id", async (req, res) => {
-    const trunk = await storage.getSipTrunk(parseInt(req.params.id));
-    if (!trunk) return res.status(404).json({ error: "SIP trunk not found" });
-    res.json(trunk);
-  });
-
-  app.post("/api/sip-trunks", async (req, res) => {
-    try {
-      const { insertSipTrunkSchema } = await import("@shared/schema");
-      const validatedData = insertSipTrunkSchema.parse(req.body);
-      const trunk = await storage.createSipTrunk(validatedData);
-      res.status(201).json(trunk);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/sip-trunks/:id", async (req, res) => {
-    try {
-      const { insertSipTrunkSchema } = await import("@shared/schema");
-      const validatedData = insertSipTrunkSchema.partial().parse(req.body);
-      const trunk = await storage.updateSipTrunk(parseInt(req.params.id), validatedData);
-      if (!trunk) return res.status(404).json({ error: "SIP trunk not found" });
-      res.json(trunk);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/sip-trunks/:id", async (req, res) => {
-    const deleted = await storage.deleteSipTrunk(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "SIP trunk not found" });
-    res.status(204).send();
-  });
-
-  // Device Templates
-  app.get("/api/device-templates", async (req, res) => {
-    const templates = await storage.getDeviceTemplates();
-    res.json(templates);
-  });
-
-  app.get("/api/device-templates/:id", async (req, res) => {
-    const template = await storage.getDeviceTemplate(parseInt(req.params.id));
-    if (!template) return res.status(404).json({ error: "Device template not found" });
-    res.json(template);
-  });
-
-  app.post("/api/device-templates", async (req, res) => {
-    try {
-      const { insertDeviceTemplateSchema } = await import("@shared/schema");
-      const validatedData = insertDeviceTemplateSchema.parse(req.body);
-      const template = await storage.createDeviceTemplate(validatedData);
-      res.status(201).json(template);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/device-templates/:id", async (req, res) => {
-    try {
-      const { insertDeviceTemplateSchema } = await import("@shared/schema");
-      const validatedData = insertDeviceTemplateSchema.partial().parse(req.body);
-      const template = await storage.updateDeviceTemplate(parseInt(req.params.id), validatedData);
-      if (!template) return res.status(404).json({ error: "Device template not found" });
-      res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/device-templates/:id", async (req, res) => {
-    const deleted = await storage.deleteDeviceTemplate(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "Device template not found" });
-    res.status(204).send();
-  });
-
-  // Holiday Schedules
-  app.get("/api/holiday-schedules", async (req, res) => {
-    const schedules = await storage.getHolidaySchedules();
-    res.json(schedules);
-  });
-
-  app.get("/api/holiday-schedules/:id", async (req, res) => {
-    const schedule = await storage.getHolidaySchedule(parseInt(req.params.id));
-    if (!schedule) return res.status(404).json({ error: "Holiday schedule not found" });
-    res.json(schedule);
-  });
-
-  app.post("/api/holiday-schedules", async (req, res) => {
-    try {
-      const { insertHolidayScheduleSchema } = await import("@shared/schema");
-      const validatedData = insertHolidayScheduleSchema.parse(req.body);
-      const schedule = await storage.createHolidaySchedule(validatedData);
-      res.status(201).json(schedule);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/holiday-schedules/:id", async (req, res) => {
-    try {
-      const { insertHolidayScheduleSchema } = await import("@shared/schema");
-      const validatedData = insertHolidayScheduleSchema.partial().parse(req.body);
-      const schedule = await storage.updateHolidaySchedule(parseInt(req.params.id), validatedData);
-      if (!schedule) return res.status(404).json({ error: "Holiday schedule not found" });
-      res.json(schedule);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/holiday-schedules/:id", async (req, res) => {
-    const deleted = await storage.deleteHolidaySchedule(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "Holiday schedule not found" });
     res.status(204).send();
   });
 
@@ -866,48 +536,6 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(204).send();
   });
 
-  // Speed Dials
-  app.get("/api/speed-dials", async (req, res) => {
-    const userId = req.query.userId as string | undefined;
-    const dials = await storage.getSpeedDials(userId);
-    res.json(dials);
-  });
-
-  app.get("/api/speed-dials/:id", async (req, res) => {
-    const dial = await storage.getSpeedDial(parseInt(req.params.id));
-    if (!dial) return res.status(404).json({ error: "Speed dial not found" });
-    res.json(dial);
-  });
-
-  app.post("/api/speed-dials", async (req, res) => {
-    try {
-      const { insertSpeedDialSchema } = await import("@shared/schema");
-      const validatedData = insertSpeedDialSchema.parse(req.body);
-      const dial = await storage.createSpeedDial(validatedData);
-      res.status(201).json(dial);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/speed-dials/:id", async (req, res) => {
-    try {
-      const { insertSpeedDialSchema } = await import("@shared/schema");
-      const validatedData = insertSpeedDialSchema.partial().parse(req.body);
-      const dial = await storage.updateSpeedDial(parseInt(req.params.id), validatedData);
-      if (!dial) return res.status(404).json({ error: "Speed dial not found" });
-      res.json(dial);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/speed-dials/:id", async (req, res) => {
-    const deleted = await storage.deleteSpeedDial(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "Speed dial not found" });
-    res.status(204).send();
-  });
-
   // Call Transcriptions
   app.get("/api/call-transcriptions", async (req, res) => {
     const transcriptions = await storage.getCallTranscriptions();
@@ -931,64 +559,6 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     }
   });
 
-  // Agent Status (mutations)
-  app.patch("/api/agent-status/:extensionId", async (req, res) => {
-    try {
-      const { insertAgentStatusSchema } = await import("@shared/schema");
-      const validatedData = insertAgentStatusSchema.partial().parse(req.body);
-      const agentStat = await storage.updateAgentStatus(parseInt(req.params.extensionId), validatedData);
-      res.json(agentStat);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  // Queue Stats (mutations)
-  app.patch("/api/queue-stats/:queueId", async (req, res) => {
-    try {
-      const { insertQueueStatSchema } = await import("@shared/schema");
-      const validatedData = insertQueueStatSchema.partial().parse(req.body);
-      const stat = await storage.updateQueueStat(parseInt(req.params.queueId), validatedData);
-      res.json(stat);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  // Parking Slots (park and retrieve)
-  app.post("/api/parking-slots/:slotNumber/park", async (req, res) => {
-    try {
-      const { insertParkingSlotSchema } = await import("@shared/schema");
-      const validatedData = insertParkingSlotSchema.partial().parse(req.body);
-      const slot = await storage.parkCall(parseInt(req.params.slotNumber), validatedData);
-      res.json(slot);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.post("/api/parking-slots/:slotNumber/retrieve", async (req, res) => {
-    try {
-      const slot = await storage.retrieveCall(parseInt(req.params.slotNumber));
-      if (!slot) return res.status(404).json({ error: "Parking slot not found" });
-      res.json(slot);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  // Voicemail (create)
-  app.post("/api/voicemails", async (req, res) => {
-    try {
-      const { insertVoicemailSchema } = await import("@shared/schema");
-      const validatedData = insertVoicemailSchema.parse(req.body);
-      const voicemail = await storage.createVoicemail(validatedData);
-      res.status(201).json(voicemail);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
   // Users
   app.get("/api/users/:id", async (req, res) => {
     const user = await storage.getUser(req.params.id);
@@ -996,69 +566,4 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     const { password, ...safeUser } = user;
     res.json(safeUser);
   });
-
-  // AI Agents
-  app.get("/api/ai-agents", async (req, res) => {
-    const agents = await storage.getAiAgents();
-    res.json(agents);
-  });
-
-  app.get("/api/ai-agents/:id", async (req, res) => {
-    const agent = await storage.getAiAgent(parseInt(req.params.id));
-    if (!agent) return res.status(404).json({ error: "AI Agent not found" });
-    res.json(agent);
-  });
-
-  app.post("/api/ai-agents", async (req, res) => {
-    try {
-      const { insertAiAgentSchema } = await import("@shared/schema");
-      const validatedData = insertAiAgentSchema.parse(req.body);
-      const agent = await storage.createAiAgent(validatedData);
-      res.status(201).json(agent);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.patch("/api/ai-agents/:id", async (req, res) => {
-    try {
-      const { insertAiAgentSchema } = await import("@shared/schema");
-      const validatedData = insertAiAgentSchema.partial().parse(req.body);
-      const agent = await storage.updateAiAgent(parseInt(req.params.id), validatedData);
-      if (!agent) return res.status(404).json({ error: "AI Agent not found" });
-      res.json(agent);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  app.delete("/api/ai-agents/:id", async (req, res) => {
-    const deleted = await storage.deleteAiAgent(parseInt(req.params.id));
-    if (!deleted) return res.status(404).json({ error: "AI Agent not found" });
-    res.status(204).send();
-  });
-
-  // AI Agent Calls
-  app.get("/api/ai-agent-calls", async (req, res) => {
-    const calls = await storage.getAiAgentCalls();
-    res.json(calls);
-  });
-
-  app.get("/api/ai-agent-calls/:agentId", async (req, res) => {
-    const calls = await storage.getAiAgentCallsByAgent(parseInt(req.params.agentId));
-    res.json(calls);
-  });
-
-  app.post("/api/ai-agent-calls", async (req, res) => {
-    try {
-      const { insertAiAgentCallSchema } = await import("@shared/schema");
-      const validatedData = insertAiAgentCallSchema.parse(req.body);
-      const callInfo = await storage.createAiAgentCall(validatedData);
-      res.status(201).json(callInfo);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Invalid request data" });
-    }
-  });
-
-  return httpServer;
 }

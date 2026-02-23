@@ -22,6 +22,8 @@ import {
   Activity,
   Webhook,
   Server,
+  TrendingUp,
+  Headset,
 } from "lucide-react";
 import {
   Sidebar,
@@ -61,8 +63,10 @@ const systemItems = [
   { title: "SIP Trunks", url: "/sip-trunks", icon: Server },
   { title: "Devices", url: "/devices", icon: Monitor },
   { title: "Integrations", url: "/integrations", icon: Puzzle, badge: "150+" },
+  { title: "Trading", url: "/trading", icon: TrendingUp },
   { title: "Webhooks", url: "/webhooks", icon: Webhook },
   { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
+  { title: "AI Agents", url: "/ai-agents", icon: Headset },
 ];
 
 const settingsItems = [

@@ -18,6 +18,7 @@ import Fax from "@/pages/fax";
 import Devices from "@/pages/devices";
 import Integrations from "@/pages/integrations";
 import AIAssistant from "@/pages/ai-assistant";
+import AIAgents from "@/pages/ai-agents";
 import UserPortal from "@/pages/user-portal";
 import Settings from "@/pages/settings";
 import RingGroups from "@/pages/ring-groups";
@@ -30,6 +31,7 @@ import RoutingRules from "@/pages/routing-rules";
 import Wallboard from "@/pages/wallboard";
 import Webhooks from "@/pages/webhooks";
 import SipTrunks from "@/pages/sip-trunks";
+import Trading from "@/pages/trading";
 import IntegrationSetupGuide from "@/pages/integration-setup-guide";
 import RCare from "@/pages/rcare";
 import NotFound from "@/pages/not-found";
@@ -49,6 +51,7 @@ function Router() {
       <Route path="/devices" component={Devices} />
       <Route path="/integrations" component={Integrations} />
       <Route path="/ai-assistant" component={AIAssistant} />
+      <Route path="/ai-agents" component={AIAgents} />
       <Route path="/user-portal" component={UserPortal} />
       <Route path="/settings" component={Settings} />
       <Route path="/support" component={Support} />
@@ -59,6 +62,7 @@ function Router() {
       <Route path="/wallboard" component={Wallboard} />
       <Route path="/webhooks" component={Webhooks} />
       <Route path="/sip-trunks" component={SipTrunks} />
+      <Route path="/trading" component={Trading} />
       <Route path="/integration-setup-guide" component={IntegrationSetupGuide} />
       <Route path="/rcare" component={RCare} />
       <Route component={NotFound} />

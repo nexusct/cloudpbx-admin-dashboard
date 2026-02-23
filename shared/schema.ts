@@ -568,3 +568,36 @@ export const deviceTemplates = pgTable("device_templates", {
 export const insertDeviceTemplateSchema = createInsertSchema(deviceTemplates).omit({ id: true, createdAt: true });
 export type InsertDeviceTemplate = z.infer<typeof insertDeviceTemplateSchema>;
 export type DeviceTemplate = typeof deviceTemplates.$inferSelect;
+
+// AI Agent Virtual Extensions
+export const aiAgents = pgTable("ai_agents", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  systemPrompt: text("system_prompt").notNull().default("You are a helpful AI assistant for the company. Answer questions politely and assist the caller."),
+  voice: text("voice").notNull().default("alloy"),
+  extensionId: integer("extension_id").references(() => extensions.id),
+  mcpServers: jsonb("mcp_servers").default([]),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const insertAiAgentSchema = createInsertSchema(aiAgents).omit({ id: true, createdAt: true });
+export type InsertAiAgent = z.infer<typeof insertAiAgentSchema>;
+export type AiAgent = typeof aiAgents.$inferSelect;
+
+export const aiAgentCalls = pgTable("ai_agent_calls", {
+  id: serial("id").primaryKey(),
+  agentId: integer("agent_id").notNull().references(() => aiAgents.id),
+  callId: varchar("call_id", { length: 50 }).notNull(),
+  callerNumber: text("caller_number").notNull(),
+  duration: integer("duration").default(0),
+  transcript: text("transcript"),
+  recordingUrl: text("recording_url"),
+  managerFeedback: text("manager_feedback"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const insertAiAgentCallSchema = createInsertSchema(aiAgentCalls).omit({ id: true, createdAt: true });
+export type InsertAiAgentCall = z.infer<typeof insertAiAgentCallSchema>;
+export type AiAgentCall = typeof aiAgentCalls.$inferSelect;

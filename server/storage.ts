@@ -28,12 +28,14 @@ import {
   type HolidaySchedule, type InsertHolidaySchedule,
   type CallDisposition, type InsertCallDisposition,
   type SpeedDial, type InsertSpeedDial,
+  type AiAgent, type InsertAiAgent,
+  type AiAgentCall, type InsertAiAgentCall,
   users, extensions, dids, callFlows, devices, callLogs,
   smsMessages, faxMessages, integrations, aiSessions, aiMessages,
   ringGroups, callQueues, systemSettings, contacts, voicemails,
   callTranscriptions, routingRules, webhooks, agentStatus, queueStats, parkingSlots,
   sipProviders, sipTrunks, deviceTemplates, integrationConnections,
-  holidaySchedules, callDispositions, speedDials,
+  holidaySchedules, callDispositions, speedDials, aiAgents, aiAgentCalls,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -190,6 +192,16 @@ export interface IStorage {
   deleteSpeedDial(id: number): Promise<boolean>;
 
   createVoicemail(voicemail: InsertVoicemail): Promise<Voicemail>;
+
+  getAiAgents(): Promise<AiAgent[]>;
+  getAiAgent(id: number): Promise<AiAgent | undefined>;
+  createAiAgent(agent: InsertAiAgent): Promise<AiAgent>;
+  updateAiAgent(id: number, agent: Partial<InsertAiAgent>): Promise<AiAgent | undefined>;
+  deleteAiAgent(id: number): Promise<boolean>;
+
+  getAiAgentCalls(): Promise<AiAgentCall[]>;
+  getAiAgentCallsByAgent(agentId: number): Promise<AiAgentCall[]>;
+  createAiAgentCall(call: InsertAiAgentCall): Promise<AiAgentCall>;
 
   seedInitialData(): Promise<void>;
 }
@@ -805,6 +817,43 @@ export class DatabaseStorage implements IStorage {
   async deleteSpeedDial(id: number): Promise<boolean> {
     const result = await db.delete(speedDials).where(eq(speedDials.id, id)).returning();
     return result.length > 0;
+  }
+
+  async getAiAgents(): Promise<AiAgent[]> {
+    return db.select().from(aiAgents).orderBy(aiAgents.name);
+  }
+
+  async getAiAgent(id: number): Promise<AiAgent | undefined> {
+    const [agent] = await db.select().from(aiAgents).where(eq(aiAgents.id, id));
+    return agent || undefined;
+  }
+
+  async createAiAgent(agent: InsertAiAgent): Promise<AiAgent> {
+    const [newAgent] = await db.insert(aiAgents).values(agent).returning();
+    return newAgent;
+  }
+
+  async updateAiAgent(id: number, agent: Partial<InsertAiAgent>): Promise<AiAgent | undefined> {
+    const [updated] = await db.update(aiAgents).set(agent).where(eq(aiAgents.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteAiAgent(id: number): Promise<boolean> {
+    const result = await db.delete(aiAgents).where(eq(aiAgents.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getAiAgentCalls(): Promise<AiAgentCall[]> {
+    return db.select().from(aiAgentCalls).orderBy(desc(aiAgentCalls.createdAt));
+  }
+
+  async getAiAgentCallsByAgent(agentId: number): Promise<AiAgentCall[]> {
+    return db.select().from(aiAgentCalls).where(eq(aiAgentCalls.agentId, agentId)).orderBy(desc(aiAgentCalls.createdAt));
+  }
+
+  async createAiAgentCall(call: InsertAiAgentCall): Promise<AiAgentCall> {
+    const [newCall] = await db.insert(aiAgentCalls).values(call).returning();
+    return newCall;
   }
 
   async seedInitialData(): Promise<void> {
