@@ -249,7 +249,7 @@ export default function RoutingRules() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch
-                      checked={rule.enabled}
+                      checked={rule.enabled ?? false}
                       onCheckedChange={(checked) => toggleMutation.mutate({ id: rule.id, enabled: checked })}
                       data-testid={`switch-rule-${rule.id}`}
                     />

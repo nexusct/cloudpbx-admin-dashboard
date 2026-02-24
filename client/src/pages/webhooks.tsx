@@ -237,7 +237,7 @@ export default function Webhooks() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch
-                      checked={webhook.enabled}
+                      checked={webhook.enabled ?? false}
                       onCheckedChange={(checked) => toggleMutation.mutate({ id: webhook.id, enabled: checked })}
                       data-testid={`switch-webhook-${webhook.id}`}
                     />

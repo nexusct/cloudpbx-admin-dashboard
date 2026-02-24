@@ -2,6 +2,11 @@ import type { Express, Request, Response } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage";
 
+function parseIdParam(param: string | string[] | undefined): number {
+  const raw = Array.isArray(param) ? param[0] : param;
+  return Number.parseInt(raw ?? "", 10);
+}
+
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
@@ -22,7 +27,10 @@ export function registerChatRoutes(app: Express): void {
   // Get single conversation with messages
   app.get("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseIdParam(req.params.id);
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ error: "Invalid conversation id" });
+      }
       const conversation = await chatStorage.getConversation(id);
       if (!conversation) {
         return res.status(404).json({ error: "Conversation not found" });
@@ -50,7 +58,10 @@ export function registerChatRoutes(app: Express): void {
   // Delete conversation
   app.delete("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseIdParam(req.params.id);
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ error: "Invalid conversation id" });
+      }
       await chatStorage.deleteConversation(id);
       res.status(204).send();
     } catch (error) {
@@ -62,7 +73,10 @@ export function registerChatRoutes(app: Express): void {
   // Send message and get AI response (streaming)
   app.post("/api/conversations/:id/messages", async (req: Request, res: Response) => {
     try {
-      const conversationId = parseInt(req.params.id);
+      const conversationId = parseIdParam(req.params.id);
+      if (Number.isNaN(conversationId)) {
+        return res.status(400).json({ error: "Invalid conversation id" });
+      }
       const { content } = req.body;
 
       // Save user message
@@ -115,4 +129,3 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 }
-

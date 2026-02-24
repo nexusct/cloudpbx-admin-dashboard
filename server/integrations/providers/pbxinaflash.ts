@@ -46,7 +46,7 @@ async function getConnectedAmi(config: PbxConfig, timeoutMs = 5000): Promise<any
   return new Promise((resolve, reject) => {
     try {
       log(`Attempting connection to ${validated.host}:${validated.port}...`);
-      const ami = new AsteriskManager(validated.port, validated.host, validated.username, validated.secret, true);
+      const ami: any = new AsteriskManager(validated.port, validated.host, validated.username, validated.secret, true);
 
       let resolved = false;
 
