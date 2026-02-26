@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import OpenAI from "openai";
 import { registerIntegrationRoutes } from "./integrations/index";
 import { registerTradingRoutes } from "./trading/routes";
+import { sipRuntime } from "./sip/sipRuntime";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -1058,6 +1059,65 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Invalid request data" });
     }
+  });
+
+  // ── SIP Runtime Service (CORE-001) ──────────────────────────────────────
+
+  /** Health check — confirms the SIP runtime is up and returns active count. */
+  app.get("/api/sip/health", (_req, res) => {
+    res.json(sipRuntime.health());
+  });
+
+  /** List all currently registered SIP endpoints. */
+  app.get("/api/sip/registrations", (_req, res) => {
+    res.json(sipRuntime.getAllRegistrations());
+  });
+
+  /** Get registration status for a specific extension. */
+  app.get("/api/sip/registrations/:extensionNumber", (req, res) => {
+    const extNum = req.params.extensionNumber;
+    if (typeof extNum !== "string" || extNum.length === 0 || extNum.length > 20) {
+      return res.status(400).json({ error: "Invalid extensionNumber" });
+    }
+    const reg = sipRuntime.getRegistration(extNum);
+    if (!reg) return res.status(404).json({ error: "Extension not registered" });
+    res.json(reg);
+  });
+
+  /**
+   * Register or refresh a SIP endpoint.
+   * Body: { extensionNumber, contact, userAgent?, expires? }
+   */
+  app.post("/api/sip/register", (req, res) => {
+    const { extensionNumber, contact, userAgent, expires } = req.body ?? {};
+    if (typeof extensionNumber !== "string" || extensionNumber.length === 0 || extensionNumber.length > 20) {
+      return res.status(400).json({ error: "extensionNumber must be a non-empty string (max 20 chars)" });
+    }
+    if (typeof contact !== "string" || contact.length === 0 || contact.length > 256) {
+      return res.status(400).json({ error: "contact must be a non-empty string (max 256 chars)" });
+    }
+    if (userAgent !== undefined && (typeof userAgent !== "string" || userAgent.length > 256)) {
+      return res.status(400).json({ error: "userAgent must be a string (max 256 chars)" });
+    }
+    if (expires !== undefined && (typeof expires !== "number" || !Number.isFinite(expires) || expires < 1)) {
+      return res.status(400).json({ error: "expires must be a positive number" });
+    }
+    const reg = sipRuntime.register({ extensionNumber, contact, userAgent, expires });
+    res.status(200).json(reg);
+  });
+
+  /**
+   * Unregister a SIP endpoint.
+   * Body: { extensionNumber }
+   */
+  app.post("/api/sip/unregister", (req, res) => {
+    const { extensionNumber } = req.body ?? {};
+    if (typeof extensionNumber !== "string" || extensionNumber.length === 0 || extensionNumber.length > 20) {
+      return res.status(400).json({ error: "extensionNumber must be a non-empty string (max 20 chars)" });
+    }
+    const removed = sipRuntime.unregister(extensionNumber);
+    if (!removed) return res.status(404).json({ error: "Extension not registered" });
+    res.status(200).json({ message: "Unregistered successfully" });
   });
 
   return httpServer;
