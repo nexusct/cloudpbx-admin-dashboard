@@ -268,6 +268,26 @@ sudo systemctl restart cloudpbx
 
 For issues and feature requests, please open an issue on GitHub.
 
+## Rollback Notes
+
+### CORE-001 — SIP Runtime Service Skeleton
+
+Files introduced by this change:
+- `server/sip/sipRuntime.ts` — in-memory SIP registration service
+- `server/sip/sip.test.ts` — acceptance tests
+
+Routes added to `server/routes.ts`:
+- `GET  /api/sip/health`
+- `GET  /api/sip/registrations`
+- `GET  /api/sip/registrations/:extensionNumber`
+- `POST /api/sip/register`
+- `POST /api/sip/unregister`
+
+**To roll back:** Remove the `import { sipRuntime } from "./sip/sipRuntime"` line
+from `server/routes.ts`, delete the _SIP Runtime Service (CORE-001)_ route block
+that precedes `return httpServer;`, and delete the `server/sip/` directory.
+No database migrations were introduced; rollback requires no schema changes.
+
 ## License
 
 CloudPBX Enterprise - Proprietary License
