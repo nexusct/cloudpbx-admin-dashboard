@@ -48,6 +48,19 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
+  getTenants(): Promise<Tenant[]>;
+  getTenant(id: string): Promise<Tenant | undefined>;
+  getTenantBySlug(slug: string): Promise<Tenant | undefined>;
+  createTenant(tenant: InsertTenant): Promise<Tenant>;
+  updateTenant(id: string, tenant: Partial<InsertTenant>): Promise<Tenant | undefined>;
+  deleteTenant(id: string): Promise<boolean>;
+
+  getServers(tenantId?: string): Promise<Server[]>;
+  getServer(id: number): Promise<Server | undefined>;
+  createServer(server: InsertServer): Promise<Server>;
+  updateServer(id: number, server: Partial<Server>): Promise<Server | undefined>;
+  deleteServer(id: number): Promise<boolean>;
+
   getExtensions(): Promise<Extension[]>;
   getExtension(id: number): Promise<Extension | undefined>;
   createExtension(extension: InsertExtension): Promise<Extension>;
@@ -223,6 +236,64 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  // Tenant management
+  async getTenants(): Promise<Tenant[]> {
+    return db.select().from(tenants);
+  }
+
+  async getTenant(id: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.id, id));
+    return tenant;
+  }
+
+  async getTenantBySlug(slug: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.slug, slug));
+    return tenant;
+  }
+
+  async createTenant(insertTenant: InsertTenant): Promise<Tenant> {
+    const [tenant] = await db.insert(tenants).values(insertTenant).returning();
+    return tenant;
+  }
+
+  async updateTenant(id: string, data: Partial<InsertTenant>): Promise<Tenant | undefined> {
+    const [tenant] = await db.update(tenants).set(data).where(eq(tenants.id, id)).returning();
+    return tenant;
+  }
+
+  async deleteTenant(id: string): Promise<boolean> {
+    const result = await db.delete(tenants).where(eq(tenants.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Server management
+  async getServers(tenantId?: string): Promise<Server[]> {
+    if (tenantId) {
+      return db.select().from(servers).where(eq(servers.tenantId, tenantId));
+    }
+    return db.select().from(servers);
+  }
+
+  async getServer(id: number): Promise<Server | undefined> {
+    const [server] = await db.select().from(servers).where(eq(servers.id, id));
+    return server;
+  }
+
+  async createServer(insertServer: InsertServer): Promise<Server> {
+    const [server] = await db.insert(servers).values(insertServer).returning();
+    return server;
+  }
+
+  async updateServer(id: number, data: Partial<Server>): Promise<Server | undefined> {
+    const [server] = await db.update(servers).set(data).where(eq(servers.id, id)).returning();
+    return server;
+  }
+
+  async deleteServer(id: number): Promise<boolean> {
+    const result = await db.delete(servers).where(eq(servers.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   async getExtensions(): Promise<Extension[]> {
