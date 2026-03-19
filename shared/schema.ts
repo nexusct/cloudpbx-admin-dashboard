@@ -3,9 +3,68 @@ import { pgTable, text, varchar, integer, boolean, timestamp, jsonb, serial } fr
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Tenants / Organizations (Multi-tenant support) - MUST BE FIRST
+export const tenants = pgTable("tenants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  status: text("status").notNull().default("active"),
+  plan: text("plan").notNull().default("standard"),
+  maxUsers: integer("max_users").default(10),
+  maxExtensions: integer("max_extensions").default(100),
+  maxDids: integer("max_dids").default(10),
+  settings: jsonb("settings").default({}),
+  logo: text("logo"),
+  domain: text("domain"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  billingEmail: text("billing_email"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export const insertTenantSchema = createInsertSchema(tenants).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertTenant = z.infer<typeof insertTenantSchema>;
+export type Tenant = typeof tenants.$inferSelect;
+
+// Servers / PBX Instances (for multi-server management)
+export const servers = pgTable("servers", {
+  id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  type: text("type").notNull().default("pbx"),
+  status: text("status").notNull().default("offline"),
+  hostname: text("hostname").notNull(),
+  port: integer("port").default(5000),
+  protocol: text("protocol").default("https"),
+  apiKey: text("api_key"),
+  apiSecret: text("api_secret"),
+  sipDomain: text("sip_domain"),
+  sipPort: integer("sip_port").default(5060),
+  tlsEnabled: boolean("tls_enabled").default(true),
+  version: text("version"),
+  region: text("region"),
+  location: text("location"),
+  capacity: jsonb("capacity").default({ maxExtensions: 1000, maxConcurrentCalls: 100 }),
+  metrics: jsonb("metrics").default({ cpu: 0, memory: 0, calls: 0, registrations: 0 }),
+  lastHealthCheck: timestamp("last_health_check"),
+  lastError: text("last_error"),
+  settings: jsonb("settings").default({}),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export const insertServerSchema = createInsertSchema(servers).omit({ id: true, createdAt: true, updatedAt: true, lastHealthCheck: true });
+export type InsertServer = z.infer<typeof insertServerSchema>;
+export type Server = typeof servers.$inferSelect;
+
 // Users table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   role: text("role").notNull().default("user"),
@@ -30,6 +89,7 @@ export type User = typeof users.$inferSelect;
 // Extensions table
 export const extensions = pgTable("extensions", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   number: varchar("number", { length: 10 }).notNull().unique(),
   name: text("name").notNull(),
   type: text("type").notNull().default("sip"),
@@ -52,6 +112,7 @@ export type Extension = typeof extensions.$inferSelect;
 // DIDs (Direct Inward Dialing numbers)
 export const dids = pgTable("dids", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   number: varchar("number", { length: 20 }).notNull().unique(),
   country: text("country").notNull().default("US"),
   city: text("city"),
@@ -74,6 +135,7 @@ export type Did = typeof dids.$inferSelect;
 // Call Flows / IVR
 export const callFlows = pgTable("call_flows", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   type: text("type").notNull().default("ivr"),
@@ -90,6 +152,7 @@ export type CallFlow = typeof callFlows.$inferSelect;
 // Devices / Handsets
 export const devices = pgTable("devices", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   mac: varchar("mac", { length: 17 }).unique(),
   model: text("model"),
@@ -111,6 +174,7 @@ export type Device = typeof devices.$inferSelect;
 // Call Logs / CDR
 export const callLogs = pgTable("call_logs", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   callId: varchar("call_id", { length: 50 }).notNull(),
   direction: text("direction").notNull(),
   fromNumber: text("from_number").notNull(),
@@ -135,6 +199,7 @@ export type CallLog = typeof callLogs.$inferSelect;
 // SMS Messages
 export const smsMessages = pgTable("sms_messages", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   direction: text("direction").notNull(),
   fromNumber: text("from_number").notNull(),
   toNumber: text("to_number").notNull(),
@@ -154,6 +219,7 @@ export type SmsMessage = typeof smsMessages.$inferSelect;
 // Fax Messages
 export const faxMessages = pgTable("fax_messages", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   direction: text("direction").notNull(),
   fromNumber: text("from_number").notNull(),
   toNumber: text("to_number").notNull(),
@@ -191,11 +257,12 @@ export type Integration = typeof integrations.$inferSelect;
 
 export const integrationConnections = pgTable("integration_connections", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   integrationId: integer("integration_id").notNull().references(() => integrations.id),
   provider: text("provider").notNull(),
   clientId: text("client_id"),
   clientSecret: text("client_secret"),
-  tenantId: text("tenant_id"),
+  providerTenantId: text("provider_tenant_id"),
   instanceUrl: text("instance_url"),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
@@ -216,6 +283,7 @@ export type IntegrationConnection = typeof integrationConnections.$inferSelect;
 // AI Chat Sessions
 export const aiSessions = pgTable("ai_sessions", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   title: text("title").notNull().default("New Chat"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
@@ -239,6 +307,7 @@ export type AiMessage = typeof aiMessages.$inferSelect;
 // Ring Groups
 export const ringGroups = pgTable("ring_groups", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   number: varchar("number", { length: 10 }).notNull().unique(),
   strategy: text("strategy").notNull().default("simultaneous"),
@@ -255,6 +324,7 @@ export type RingGroup = typeof ringGroups.$inferSelect;
 // Call Queues
 export const callQueues = pgTable("call_queues", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   number: varchar("number", { length: 10 }).notNull().unique(),
   strategy: text("strategy").notNull().default("round_robin"),
@@ -285,6 +355,7 @@ export type SystemSetting = typeof systemSettings.$inferSelect;
 // Contacts / Phonebook
 export const contacts = pgTable("contacts", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name"),
   company: text("company"),
@@ -306,6 +377,7 @@ export type Contact = typeof contacts.$inferSelect;
 // Voicemails
 export const voicemails = pgTable("voicemails", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   extensionId: integer("extension_id").references(() => extensions.id),
   callerNumber: text("caller_number").notNull(),
   callerName: text("caller_name"),
@@ -342,9 +414,10 @@ export const insertCallTranscriptionSchema = createInsertSchema(callTranscriptio
 export type InsertCallTranscription = z.infer<typeof insertCallTranscriptionSchema>;
 export type CallTranscription = typeof callTranscriptions.$inferSelect;
 
-// Time-Based Routing Rules
+// Routing Rules
 export const routingRules = pgTable("routing_rules", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   priority: integer("priority").default(100),
@@ -363,6 +436,7 @@ export type RoutingRule = typeof routingRules.$inferSelect;
 // Holiday Schedules
 export const holidaySchedules = pgTable("holiday_schedules", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   date: text("date").notNull(),
   recurring: boolean("recurring").default(false),
@@ -378,6 +452,7 @@ export type HolidaySchedule = typeof holidaySchedules.$inferSelect;
 // Webhooks
 export const webhooks = pgTable("webhooks", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   url: text("url").notNull(),
   events: jsonb("events").default([]),
@@ -511,6 +586,7 @@ export type SipProvider = typeof sipProviders.$inferSelect;
 // SIP Trunks (configured instances)
 export const sipTrunks = pgTable("sip_trunks", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   providerId: integer("provider_id").references(() => sipProviders.id),
   status: text("status").notNull().default("inactive"),
@@ -572,6 +648,7 @@ export type DeviceTemplate = typeof deviceTemplates.$inferSelect;
 // AI Agent Virtual Extensions
 export const aiAgents = pgTable("ai_agents", {
   id: serial("id").primaryKey(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   systemPrompt: text("system_prompt").notNull().default("You are a helpful AI assistant for the company. Answer questions politely and assist the caller."),
