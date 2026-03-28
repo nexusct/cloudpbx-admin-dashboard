@@ -30,12 +30,51 @@ import {
   type SpeedDial, type InsertSpeedDial,
   type AiAgent, type InsertAiAgent,
   type AiAgentCall, type InsertAiAgentCall,
+  type SoftphoneSession, type InsertSoftphoneSession,
+  type CallQualityScore, type InsertCallQualityScore,
+  type Campaign, type InsertCampaign,
+  type CampaignContact, type InsertCampaignContact,
+  type VoicePrint, type InsertVoicePrint,
+  type EmotionAnalytics, type InsertEmotionAnalytics,
+  type FraudEvent, type InsertFraudEvent,
+  type BlockedNumber, type InsertBlockedNumber,
+  type RecordingPolicy, type InsertRecordingPolicy,
+  type CallbackRequest, type InsertCallbackRequest,
+  type PortingRequest, type InsertPortingRequest,
+  type NetworkQualityMetric, type InsertNetworkQualityMetric,
+  type OmnichannelThread, type InsertOmnichannelThread,
+  type AgentAchievement, type InsertAgentAchievement,
+  type CustomReport, type InsertCustomReport,
+  type IvrNodeStat, type InsertIvrNodeStat,
+  type ApiKey, type InsertApiKey,
+  type SipSecurityEvent, type InsertSipSecurityEvent,
+  type IpBlocklist, type InsertIpBlocklist,
+  type BusinessHourProfile, type InsertBusinessHourProfile,
+  type CallJourney, type InsertCallJourney,
+  type ProvisioningProfile, type InsertProvisioningProfile,
+  type FailoverRule, type InsertFailoverRule,
+  type CoachingAlert, type InsertCoachingAlert,
+  type CoachingTrigger, type InsertCoachingTrigger,
+  type CallCostRecord, type InsertCallCostRecord,
+  type CostBudget, type InsertCostBudget,
+  type Tenant, type InsertTenant,
+  type CarbonFootprintRecord, type InsertCarbonFootprintRecord,
+  type GreenGoal, type InsertGreenGoal,
+  type LiveCoachingSession, type InsertLiveCoachingSession,
   users, extensions, dids, callFlows, devices, callLogs,
   smsMessages, faxMessages, integrations, aiSessions, aiMessages,
   ringGroups, callQueues, systemSettings, contacts, voicemails,
   callTranscriptions, routingRules, webhooks, agentStatus, queueStats, parkingSlots,
   sipProviders, sipTrunks, deviceTemplates, integrationConnections,
   holidaySchedules, callDispositions, speedDials, aiAgents, aiAgentCalls,
+  softphoneSessions, callQualityScores, campaigns, campaignContacts,
+  voicePrints, emotionAnalytics, fraudEvents, blockedNumbers,
+  recordingPolicies, callbackRequests, portingRequests, networkQualityMetrics,
+  omnichannelThreads, agentAchievements, customReports, ivrNodeStats,
+  apiKeys, sipSecurityEvents, ipBlocklist, businessHourProfiles,
+  callJourneys, provisioningProfiles, failoverRules, coachingAlerts,
+  coachingTriggers, callCostRecords, costBudgets, tenants,
+  carbonFootprintRecords, greenGoals, liveCoachingSessions,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -202,6 +241,159 @@ export interface IStorage {
   getAiAgentCalls(): Promise<AiAgentCall[]>;
   getAiAgentCallsByAgent(agentId: number): Promise<AiAgentCall[]>;
   createAiAgentCall(call: InsertAiAgentCall): Promise<AiAgentCall>;
+
+  // Feature 1: WebRTC Softphone
+  getSoftphoneSessions(): Promise<SoftphoneSession[]>;
+  createSoftphoneSession(s: InsertSoftphoneSession): Promise<SoftphoneSession>;
+  updateSoftphoneSession(id: number, s: Partial<InsertSoftphoneSession>): Promise<SoftphoneSession | undefined>;
+  deleteSoftphoneSession(id: number): Promise<boolean>;
+
+  // Feature 2: Call Quality Scores
+  getCallQualityScores(): Promise<CallQualityScore[]>;
+  createCallQualityScore(s: InsertCallQualityScore): Promise<CallQualityScore>;
+  updateCallQualityScore(id: number, s: Partial<InsertCallQualityScore>): Promise<CallQualityScore | undefined>;
+
+  // Feature 3: Campaigns
+  getCampaigns(): Promise<Campaign[]>;
+  createCampaign(c: InsertCampaign): Promise<Campaign>;
+  updateCampaign(id: number, c: Partial<InsertCampaign>): Promise<Campaign | undefined>;
+  deleteCampaign(id: number): Promise<boolean>;
+  getCampaignContacts(campaignId: number): Promise<CampaignContact[]>;
+  createCampaignContact(c: InsertCampaignContact): Promise<CampaignContact>;
+
+  // Feature 4: Voice Biometrics
+  getVoicePrints(): Promise<VoicePrint[]>;
+  createVoicePrint(v: InsertVoicePrint): Promise<VoicePrint>;
+  updateVoicePrint(id: number, v: Partial<InsertVoicePrint>): Promise<VoicePrint | undefined>;
+  deleteVoicePrint(id: number): Promise<boolean>;
+
+  // Feature 5: Emotion Analytics
+  getEmotionAnalytics(): Promise<EmotionAnalytics[]>;
+  createEmotionAnalytics(e: InsertEmotionAnalytics): Promise<EmotionAnalytics>;
+
+  // Feature 6: Fraud Detection
+  getFraudEvents(): Promise<FraudEvent[]>;
+  createFraudEvent(e: InsertFraudEvent): Promise<FraudEvent>;
+  updateFraudEvent(id: number, e: Partial<InsertFraudEvent>): Promise<FraudEvent | undefined>;
+  getBlockedNumbers(): Promise<BlockedNumber[]>;
+  createBlockedNumber(n: InsertBlockedNumber): Promise<BlockedNumber>;
+  deleteBlockedNumber(id: number): Promise<boolean>;
+
+  // Feature 7: Recording Policies
+  getRecordingPolicies(): Promise<RecordingPolicy[]>;
+  createRecordingPolicy(p: InsertRecordingPolicy): Promise<RecordingPolicy>;
+  updateRecordingPolicy(id: number, p: Partial<InsertRecordingPolicy>): Promise<RecordingPolicy | undefined>;
+  deleteRecordingPolicy(id: number): Promise<boolean>;
+
+  // Feature 8: Callback Requests
+  getCallbackRequests(): Promise<CallbackRequest[]>;
+  createCallbackRequest(r: InsertCallbackRequest): Promise<CallbackRequest>;
+  updateCallbackRequest(id: number, r: Partial<InsertCallbackRequest>): Promise<CallbackRequest | undefined>;
+  deleteCallbackRequest(id: number): Promise<boolean>;
+
+  // Feature 9: Porting Requests
+  getPortingRequests(): Promise<PortingRequest[]>;
+  createPortingRequest(r: InsertPortingRequest): Promise<PortingRequest>;
+  updatePortingRequest(id: number, r: Partial<InsertPortingRequest>): Promise<PortingRequest | undefined>;
+  deletePortingRequest(id: number): Promise<boolean>;
+
+  // Feature 10: Network Quality
+  getNetworkQualityMetrics(): Promise<NetworkQualityMetric[]>;
+  createNetworkQualityMetric(m: InsertNetworkQualityMetric): Promise<NetworkQualityMetric>;
+
+  // Feature 11: Omnichannel
+  getOmnichannelThreads(): Promise<OmnichannelThread[]>;
+  createOmnichannelThread(t: InsertOmnichannelThread): Promise<OmnichannelThread>;
+  updateOmnichannelThread(id: number, t: Partial<InsertOmnichannelThread>): Promise<OmnichannelThread | undefined>;
+
+  // Feature 12: Agent Gamification
+  getAgentAchievements(): Promise<AgentAchievement[]>;
+  createAgentAchievement(a: InsertAgentAchievement): Promise<AgentAchievement>;
+  updateAgentAchievement(id: number, a: Partial<InsertAgentAchievement>): Promise<AgentAchievement | undefined>;
+
+  // Feature 13: Custom Reports
+  getCustomReports(): Promise<CustomReport[]>;
+  createCustomReport(r: InsertCustomReport): Promise<CustomReport>;
+  updateCustomReport(id: number, r: Partial<InsertCustomReport>): Promise<CustomReport | undefined>;
+  deleteCustomReport(id: number): Promise<boolean>;
+
+  // Feature 14: IVR Analytics
+  getIvrNodeStats(): Promise<IvrNodeStat[]>;
+  createIvrNodeStat(s: InsertIvrNodeStat): Promise<IvrNodeStat>;
+
+  // Feature 15: API Keys
+  getApiKeys(): Promise<ApiKey[]>;
+  createApiKey(k: InsertApiKey): Promise<ApiKey>;
+  updateApiKey(id: number, k: Partial<InsertApiKey>): Promise<ApiKey | undefined>;
+  deleteApiKey(id: number): Promise<boolean>;
+
+  // Feature 16: SIP Security
+  getSipSecurityEvents(): Promise<SipSecurityEvent[]>;
+  createSipSecurityEvent(e: InsertSipSecurityEvent): Promise<SipSecurityEvent>;
+  updateSipSecurityEvent(id: number, e: Partial<InsertSipSecurityEvent>): Promise<SipSecurityEvent | undefined>;
+  getIpBlocklist(): Promise<IpBlocklist[]>;
+  createIpBlocklistEntry(e: InsertIpBlocklist): Promise<IpBlocklist>;
+  deleteIpBlocklistEntry(id: number): Promise<boolean>;
+
+  // Feature 17: Business Hours
+  getBusinessHourProfiles(): Promise<BusinessHourProfile[]>;
+  createBusinessHourProfile(p: InsertBusinessHourProfile): Promise<BusinessHourProfile>;
+  updateBusinessHourProfile(id: number, p: Partial<InsertBusinessHourProfile>): Promise<BusinessHourProfile | undefined>;
+  deleteBusinessHourProfile(id: number): Promise<boolean>;
+
+  // Feature 18: Call Journey
+  getCallJourneys(): Promise<CallJourney[]>;
+  createCallJourney(j: InsertCallJourney): Promise<CallJourney>;
+  getCallJourneyByCallId(callId: string): Promise<CallJourney | undefined>;
+
+  // Feature 19: Provisioning Profiles
+  getProvisioningProfiles(): Promise<ProvisioningProfile[]>;
+  createProvisioningProfile(p: InsertProvisioningProfile): Promise<ProvisioningProfile>;
+  updateProvisioningProfile(id: number, p: Partial<InsertProvisioningProfile>): Promise<ProvisioningProfile | undefined>;
+  deleteProvisioningProfile(id: number): Promise<boolean>;
+
+  // Feature 20: Failover Rules
+  getFailoverRules(): Promise<FailoverRule[]>;
+  getFailoverRule(id: number): Promise<FailoverRule | undefined>;
+  createFailoverRule(r: InsertFailoverRule): Promise<FailoverRule>;
+  updateFailoverRule(id: number, r: Partial<InsertFailoverRule>): Promise<FailoverRule | undefined>;
+  deleteFailoverRule(id: number): Promise<boolean>;
+
+  // Feature 21: Coaching
+  getCoachingTriggers(): Promise<CoachingTrigger[]>;
+  createCoachingTrigger(t: InsertCoachingTrigger): Promise<CoachingTrigger>;
+  updateCoachingTrigger(id: number, t: Partial<InsertCoachingTrigger>): Promise<CoachingTrigger | undefined>;
+  deleteCoachingTrigger(id: number): Promise<boolean>;
+  getCoachingAlerts(): Promise<CoachingAlert[]>;
+  createCoachingAlert(a: InsertCoachingAlert): Promise<CoachingAlert>;
+  updateCoachingAlert(id: number, a: Partial<InsertCoachingAlert>): Promise<CoachingAlert | undefined>;
+
+  // Feature 22: Cost Analytics
+  getCallCostRecords(): Promise<CallCostRecord[]>;
+  createCallCostRecord(r: InsertCallCostRecord): Promise<CallCostRecord>;
+  getCostBudgets(): Promise<CostBudget[]>;
+  createCostBudget(b: InsertCostBudget): Promise<CostBudget>;
+  updateCostBudget(id: number, b: Partial<InsertCostBudget>): Promise<CostBudget | undefined>;
+  deleteCostBudget(id: number): Promise<boolean>;
+
+  // Feature 23: Multi-Tenant
+  getTenants(): Promise<Tenant[]>;
+  createTenant(t: InsertTenant): Promise<Tenant>;
+  updateTenant(id: number, t: Partial<InsertTenant>): Promise<Tenant | undefined>;
+  deleteTenant(id: number): Promise<boolean>;
+
+  // Feature 24: Green Calling
+  getCarbonFootprintRecords(): Promise<CarbonFootprintRecord[]>;
+  createCarbonFootprintRecord(r: InsertCarbonFootprintRecord): Promise<CarbonFootprintRecord>;
+  getGreenGoals(): Promise<GreenGoal[]>;
+  createGreenGoal(g: InsertGreenGoal): Promise<GreenGoal>;
+  updateGreenGoal(id: number, g: Partial<InsertGreenGoal>): Promise<GreenGoal | undefined>;
+
+  // Feature 25: Live Coaching
+  getLiveCoachingSessions(): Promise<LiveCoachingSession[]>;
+  createLiveCoachingSession(s: InsertLiveCoachingSession): Promise<LiveCoachingSession>;
+  updateLiveCoachingSession(id: number, s: Partial<InsertLiveCoachingSession>): Promise<LiveCoachingSession | undefined>;
+  deleteLiveCoachingSession(id: number): Promise<boolean>;
 
   seedInitialData(): Promise<void>;
 }
@@ -855,6 +1047,163 @@ export class DatabaseStorage implements IStorage {
     const [newCall] = await db.insert(aiAgentCalls).values(call).returning();
     return newCall;
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 25 INDUSTRY-FIRST FEATURES — STORAGE IMPLEMENTATIONS
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Feature 1: WebRTC Softphone
+  async getSoftphoneSessions() { return db.select().from(softphoneSessions).orderBy(desc(softphoneSessions.startedAt)); }
+  async createSoftphoneSession(s: InsertSoftphoneSession) { const [r] = await db.insert(softphoneSessions).values(s).returning(); return r; }
+  async updateSoftphoneSession(id: number, s: Partial<InsertSoftphoneSession>) { const [r] = await db.update(softphoneSessions).set(s).where(eq(softphoneSessions.id, id)).returning(); return r || undefined; }
+  async deleteSoftphoneSession(id: number) { const r = await db.delete(softphoneSessions).where(eq(softphoneSessions.id, id)).returning(); return r.length > 0; }
+
+  // Feature 2: Call Quality Scores
+  async getCallQualityScores() { return db.select().from(callQualityScores).orderBy(desc(callQualityScores.createdAt)); }
+  async createCallQualityScore(s: InsertCallQualityScore) { const [r] = await db.insert(callQualityScores).values(s).returning(); return r; }
+  async updateCallQualityScore(id: number, s: Partial<InsertCallQualityScore>) { const [r] = await db.update(callQualityScores).set(s).where(eq(callQualityScores.id, id)).returning(); return r || undefined; }
+
+  // Feature 3: Campaigns
+  async getCampaigns() { return db.select().from(campaigns).orderBy(desc(campaigns.createdAt)); }
+  async createCampaign(c: InsertCampaign) { const [r] = await db.insert(campaigns).values(c).returning(); return r; }
+  async updateCampaign(id: number, c: Partial<InsertCampaign>) { const [r] = await db.update(campaigns).set(c).where(eq(campaigns.id, id)).returning(); return r || undefined; }
+  async deleteCampaign(id: number) { const r = await db.delete(campaigns).where(eq(campaigns.id, id)).returning(); return r.length > 0; }
+  async getCampaignContacts(campaignId: number) { return db.select().from(campaignContacts).where(eq(campaignContacts.campaignId, campaignId)); }
+  async createCampaignContact(c: InsertCampaignContact) { const [r] = await db.insert(campaignContacts).values(c).returning(); return r; }
+
+  // Feature 4: Voice Biometrics
+  async getVoicePrints() { return db.select().from(voicePrints).orderBy(desc(voicePrints.createdAt)); }
+  async createVoicePrint(v: InsertVoicePrint) { const [r] = await db.insert(voicePrints).values(v).returning(); return r; }
+  async updateVoicePrint(id: number, v: Partial<InsertVoicePrint>) { const [r] = await db.update(voicePrints).set(v).where(eq(voicePrints.id, id)).returning(); return r || undefined; }
+  async deleteVoicePrint(id: number) { const r = await db.delete(voicePrints).where(eq(voicePrints.id, id)).returning(); return r.length > 0; }
+
+  // Feature 5: Emotion Analytics
+  async getEmotionAnalytics() { return db.select().from(emotionAnalytics).orderBy(desc(emotionAnalytics.createdAt)); }
+  async createEmotionAnalytics(e: InsertEmotionAnalytics) { const [r] = await db.insert(emotionAnalytics).values(e).returning(); return r; }
+
+  // Feature 6: Fraud Detection
+  async getFraudEvents() { return db.select().from(fraudEvents).orderBy(desc(fraudEvents.detectedAt)); }
+  async createFraudEvent(e: InsertFraudEvent) { const [r] = await db.insert(fraudEvents).values(e).returning(); return r; }
+  async updateFraudEvent(id: number, e: Partial<InsertFraudEvent>) { const [r] = await db.update(fraudEvents).set(e).where(eq(fraudEvents.id, id)).returning(); return r || undefined; }
+  async getBlockedNumbers() { return db.select().from(blockedNumbers).orderBy(desc(blockedNumbers.createdAt)); }
+  async createBlockedNumber(n: InsertBlockedNumber) { const [r] = await db.insert(blockedNumbers).values(n).returning(); return r; }
+  async deleteBlockedNumber(id: number) { const r = await db.delete(blockedNumbers).where(eq(blockedNumbers.id, id)).returning(); return r.length > 0; }
+
+  // Feature 7: Recording Policies
+  async getRecordingPolicies() { return db.select().from(recordingPolicies).orderBy(desc(recordingPolicies.createdAt)); }
+  async createRecordingPolicy(p: InsertRecordingPolicy) { const [r] = await db.insert(recordingPolicies).values(p).returning(); return r; }
+  async updateRecordingPolicy(id: number, p: Partial<InsertRecordingPolicy>) { const [r] = await db.update(recordingPolicies).set(p).where(eq(recordingPolicies.id, id)).returning(); return r || undefined; }
+  async deleteRecordingPolicy(id: number) { const r = await db.delete(recordingPolicies).where(eq(recordingPolicies.id, id)).returning(); return r.length > 0; }
+
+  // Feature 8: Callback Requests
+  async getCallbackRequests() { return db.select().from(callbackRequests).orderBy(desc(callbackRequests.requestedAt)); }
+  async createCallbackRequest(r: InsertCallbackRequest) { const [row] = await db.insert(callbackRequests).values(r).returning(); return row; }
+  async updateCallbackRequest(id: number, r: Partial<InsertCallbackRequest>) { const [row] = await db.update(callbackRequests).set(r).where(eq(callbackRequests.id, id)).returning(); return row || undefined; }
+  async deleteCallbackRequest(id: number) { const r = await db.delete(callbackRequests).where(eq(callbackRequests.id, id)).returning(); return r.length > 0; }
+
+  // Feature 9: Porting Requests
+  async getPortingRequests() { return db.select().from(portingRequests).orderBy(desc(portingRequests.createdAt)); }
+  async createPortingRequest(r: InsertPortingRequest) { const [row] = await db.insert(portingRequests).values(r).returning(); return row; }
+  async updatePortingRequest(id: number, r: Partial<InsertPortingRequest>) { const [row] = await db.update(portingRequests).set(r).where(eq(portingRequests.id, id)).returning(); return row || undefined; }
+  async deletePortingRequest(id: number) { const r = await db.delete(portingRequests).where(eq(portingRequests.id, id)).returning(); return r.length > 0; }
+
+  // Feature 10: Network Quality
+  async getNetworkQualityMetrics() { return db.select().from(networkQualityMetrics).orderBy(desc(networkQualityMetrics.measuredAt)); }
+  async createNetworkQualityMetric(m: InsertNetworkQualityMetric) { const [r] = await db.insert(networkQualityMetrics).values(m).returning(); return r; }
+
+  // Feature 11: Omnichannel
+  async getOmnichannelThreads() { return db.select().from(omnichannelThreads).orderBy(desc(omnichannelThreads.lastMessageAt)); }
+  async createOmnichannelThread(t: InsertOmnichannelThread) { const [r] = await db.insert(omnichannelThreads).values(t).returning(); return r; }
+  async updateOmnichannelThread(id: number, t: Partial<InsertOmnichannelThread>) { const [r] = await db.update(omnichannelThreads).set(t).where(eq(omnichannelThreads.id, id)).returning(); return r || undefined; }
+
+  // Feature 12: Agent Gamification
+  async getAgentAchievements() { return db.select().from(agentAchievements).orderBy(desc(agentAchievements.totalPoints)); }
+  async createAgentAchievement(a: InsertAgentAchievement) { const [r] = await db.insert(agentAchievements).values(a).returning(); return r; }
+  async updateAgentAchievement(id: number, a: Partial<InsertAgentAchievement>) { const [r] = await db.update(agentAchievements).set(a).where(eq(agentAchievements.id, id)).returning(); return r || undefined; }
+
+  // Feature 13: Custom Reports
+  async getCustomReports() { return db.select().from(customReports).orderBy(desc(customReports.createdAt)); }
+  async createCustomReport(r: InsertCustomReport) { const [row] = await db.insert(customReports).values(r).returning(); return row; }
+  async updateCustomReport(id: number, r: Partial<InsertCustomReport>) { const [row] = await db.update(customReports).set(r).where(eq(customReports.id, id)).returning(); return row || undefined; }
+  async deleteCustomReport(id: number) { const r = await db.delete(customReports).where(eq(customReports.id, id)).returning(); return r.length > 0; }
+
+  // Feature 14: IVR Analytics
+  async getIvrNodeStats() { return db.select().from(ivrNodeStats).orderBy(desc(ivrNodeStats.createdAt)); }
+  async createIvrNodeStat(s: InsertIvrNodeStat) { const [r] = await db.insert(ivrNodeStats).values(s).returning(); return r; }
+
+  // Feature 15: API Keys
+  async getApiKeys() { return db.select().from(apiKeys).orderBy(desc(apiKeys.createdAt)); }
+  async createApiKey(k: InsertApiKey) { const [r] = await db.insert(apiKeys).values(k).returning(); return r; }
+  async updateApiKey(id: number, k: Partial<InsertApiKey>) { const [r] = await db.update(apiKeys).set(k).where(eq(apiKeys.id, id)).returning(); return r || undefined; }
+  async deleteApiKey(id: number) { const r = await db.delete(apiKeys).where(eq(apiKeys.id, id)).returning(); return r.length > 0; }
+
+  // Feature 16: SIP Security
+  async getSipSecurityEvents() { return db.select().from(sipSecurityEvents).orderBy(desc(sipSecurityEvents.detectedAt)); }
+  async createSipSecurityEvent(e: InsertSipSecurityEvent) { const [r] = await db.insert(sipSecurityEvents).values(e).returning(); return r; }
+  async updateSipSecurityEvent(id: number, e: Partial<InsertSipSecurityEvent>) { const [r] = await db.update(sipSecurityEvents).set(e).where(eq(sipSecurityEvents.id, id)).returning(); return r || undefined; }
+  async getIpBlocklist() { return db.select().from(ipBlocklist).orderBy(desc(ipBlocklist.createdAt)); }
+  async createIpBlocklistEntry(e: InsertIpBlocklist) { const [r] = await db.insert(ipBlocklist).values(e).returning(); return r; }
+  async deleteIpBlocklistEntry(id: number) { const r = await db.delete(ipBlocklist).where(eq(ipBlocklist.id, id)).returning(); return r.length > 0; }
+
+  // Feature 17: Business Hours
+  async getBusinessHourProfiles() { return db.select().from(businessHourProfiles).orderBy(desc(businessHourProfiles.createdAt)); }
+  async createBusinessHourProfile(p: InsertBusinessHourProfile) { const [r] = await db.insert(businessHourProfiles).values(p).returning(); return r; }
+  async updateBusinessHourProfile(id: number, p: Partial<InsertBusinessHourProfile>) { const [r] = await db.update(businessHourProfiles).set(p).where(eq(businessHourProfiles.id, id)).returning(); return r || undefined; }
+  async deleteBusinessHourProfile(id: number) { const r = await db.delete(businessHourProfiles).where(eq(businessHourProfiles.id, id)).returning(); return r.length > 0; }
+
+  // Feature 18: Call Journey
+  async getCallJourneys() { return db.select().from(callJourneys).orderBy(desc(callJourneys.startTime)); }
+  async createCallJourney(j: InsertCallJourney) { const [r] = await db.insert(callJourneys).values(j).returning(); return r; }
+  async getCallJourneyByCallId(callId: string) { const [r] = await db.select().from(callJourneys).where(eq(callJourneys.callId, callId)); return r || undefined; }
+
+  // Feature 19: Provisioning Profiles
+  async getProvisioningProfiles() { return db.select().from(provisioningProfiles).orderBy(desc(provisioningProfiles.createdAt)); }
+  async createProvisioningProfile(p: InsertProvisioningProfile) { const [r] = await db.insert(provisioningProfiles).values(p).returning(); return r; }
+  async updateProvisioningProfile(id: number, p: Partial<InsertProvisioningProfile>) { const [r] = await db.update(provisioningProfiles).set(p).where(eq(provisioningProfiles.id, id)).returning(); return r || undefined; }
+  async deleteProvisioningProfile(id: number) { const r = await db.delete(provisioningProfiles).where(eq(provisioningProfiles.id, id)).returning(); return r.length > 0; }
+
+  // Feature 20: Failover Rules
+  async getFailoverRules() { return db.select().from(failoverRules).orderBy(desc(failoverRules.createdAt)); }
+  async getFailoverRule(id: number) { const [r] = await db.select().from(failoverRules).where(eq(failoverRules.id, id)); return r || undefined; }
+  async createFailoverRule(r: InsertFailoverRule) { const [row] = await db.insert(failoverRules).values(r).returning(); return row; }
+  async updateFailoverRule(id: number, r: Partial<InsertFailoverRule>) { const [row] = await db.update(failoverRules).set(r).where(eq(failoverRules.id, id)).returning(); return row || undefined; }
+  async deleteFailoverRule(id: number) { const r = await db.delete(failoverRules).where(eq(failoverRules.id, id)).returning(); return r.length > 0; }
+
+  // Feature 21: Coaching
+  async getCoachingTriggers() { return db.select().from(coachingTriggers).orderBy(desc(coachingTriggers.createdAt)); }
+  async createCoachingTrigger(t: InsertCoachingTrigger) { const [r] = await db.insert(coachingTriggers).values(t).returning(); return r; }
+  async updateCoachingTrigger(id: number, t: Partial<InsertCoachingTrigger>) { const [r] = await db.update(coachingTriggers).set(t).where(eq(coachingTriggers.id, id)).returning(); return r || undefined; }
+  async deleteCoachingTrigger(id: number) { const r = await db.delete(coachingTriggers).where(eq(coachingTriggers.id, id)).returning(); return r.length > 0; }
+  async getCoachingAlerts() { return db.select().from(coachingAlerts).orderBy(desc(coachingAlerts.detectedAt)); }
+  async createCoachingAlert(a: InsertCoachingAlert) { const [r] = await db.insert(coachingAlerts).values(a).returning(); return r; }
+  async updateCoachingAlert(id: number, a: Partial<InsertCoachingAlert>) { const [r] = await db.update(coachingAlerts).set(a).where(eq(coachingAlerts.id, id)).returning(); return r || undefined; }
+
+  // Feature 22: Cost Analytics
+  async getCallCostRecords() { return db.select().from(callCostRecords).orderBy(desc(callCostRecords.billedAt)); }
+  async createCallCostRecord(r: InsertCallCostRecord) { const [row] = await db.insert(callCostRecords).values(r).returning(); return row; }
+  async getCostBudgets() { return db.select().from(costBudgets).orderBy(desc(costBudgets.createdAt)); }
+  async createCostBudget(b: InsertCostBudget) { const [r] = await db.insert(costBudgets).values(b).returning(); return r; }
+  async updateCostBudget(id: number, b: Partial<InsertCostBudget>) { const [r] = await db.update(costBudgets).set(b).where(eq(costBudgets.id, id)).returning(); return r || undefined; }
+  async deleteCostBudget(id: number) { const r = await db.delete(costBudgets).where(eq(costBudgets.id, id)).returning(); return r.length > 0; }
+
+  // Feature 23: Multi-Tenant
+  async getTenants() { return db.select().from(tenants).orderBy(desc(tenants.createdAt)); }
+  async createTenant(t: InsertTenant) { const [r] = await db.insert(tenants).values(t).returning(); return r; }
+  async updateTenant(id: number, t: Partial<InsertTenant>) { const [r] = await db.update(tenants).set(t).where(eq(tenants.id, id)).returning(); return r || undefined; }
+  async deleteTenant(id: number) { const r = await db.delete(tenants).where(eq(tenants.id, id)).returning(); return r.length > 0; }
+
+  // Feature 24: Green Calling
+  async getCarbonFootprintRecords() { return db.select().from(carbonFootprintRecords).orderBy(desc(carbonFootprintRecords.createdAt)); }
+  async createCarbonFootprintRecord(r: InsertCarbonFootprintRecord) { const [row] = await db.insert(carbonFootprintRecords).values(r).returning(); return row; }
+  async getGreenGoals() { return db.select().from(greenGoals).orderBy(desc(greenGoals.createdAt)); }
+  async createGreenGoal(g: InsertGreenGoal) { const [r] = await db.insert(greenGoals).values(g).returning(); return r; }
+  async updateGreenGoal(id: number, g: Partial<InsertGreenGoal>) { const [r] = await db.update(greenGoals).set(g).where(eq(greenGoals.id, id)).returning(); return r || undefined; }
+
+  // Feature 25: Live Coaching
+  async getLiveCoachingSessions() { return db.select().from(liveCoachingSessions).orderBy(desc(liveCoachingSessions.startedAt)); }
+  async createLiveCoachingSession(s: InsertLiveCoachingSession) { const [r] = await db.insert(liveCoachingSessions).values(s).returning(); return r; }
+  async updateLiveCoachingSession(id: number, s: Partial<InsertLiveCoachingSession>) { const [r] = await db.update(liveCoachingSessions).set(s).where(eq(liveCoachingSessions.id, id)).returning(); return r || undefined; }
+  async deleteLiveCoachingSession(id: number) { const r = await db.delete(liveCoachingSessions).where(eq(liveCoachingSessions.id, id)).returning(); return r.length > 0; }
 
   async seedInitialData(): Promise<void> {
     const existingExtensions = await this.getExtensions();

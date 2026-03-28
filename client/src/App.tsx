@@ -35,6 +35,32 @@ import Trading from "@/pages/trading";
 import IntegrationSetupGuide from "@/pages/integration-setup-guide";
 import RCare from "@/pages/rcare";
 import NotFound from "@/pages/not-found";
+// 25 Industry-First Feature Pages
+import Softphone from "@/pages/softphone";
+import CallQuality from "@/pages/call-quality";
+import Campaigns from "@/pages/campaigns";
+import VoiceBiometrics from "@/pages/voice-biometrics";
+import EmotionAnalytics from "@/pages/emotion-analytics";
+import FraudDetection from "@/pages/fraud-detection";
+import ComplianceRecording from "@/pages/compliance-recording";
+import CallbackScheduler from "@/pages/callback-scheduler";
+import NumberPorting from "@/pages/number-porting";
+import NetworkQuality from "@/pages/network-quality";
+import Omnichannel from "@/pages/omnichannel";
+import Gamification from "@/pages/gamification";
+import ReportBuilder from "@/pages/report-builder";
+import IVRAnalytics from "@/pages/ivr-analytics";
+import APIKeys from "@/pages/api-keys";
+import SIPSecurity from "@/pages/sip-security";
+import BusinessHours from "@/pages/business-hours";
+import CallJourney from "@/pages/call-journey";
+import AutoProvisioning from "@/pages/auto-provisioning";
+import DisasterRecovery from "@/pages/disaster-recovery";
+import ConversationIntelligence from "@/pages/conversation-intelligence";
+import CostAnalytics from "@/pages/cost-analytics";
+import Tenants from "@/pages/tenants";
+import GreenCalling from "@/pages/green-calling";
+import LiveCoaching from "@/pages/live-coaching";
 
 function Router() {
   return (
@@ -65,6 +91,32 @@ function Router() {
       <Route path="/trading" component={Trading} />
       <Route path="/integration-setup-guide" component={IntegrationSetupGuide} />
       <Route path="/rcare" component={RCare} />
+      {/* 25 Industry-First Feature Routes */}
+      <Route path="/softphone" component={Softphone} />
+      <Route path="/call-quality" component={CallQuality} />
+      <Route path="/campaigns" component={Campaigns} />
+      <Route path="/voice-biometrics" component={VoiceBiometrics} />
+      <Route path="/emotion-analytics" component={EmotionAnalytics} />
+      <Route path="/fraud-detection" component={FraudDetection} />
+      <Route path="/compliance-recording" component={ComplianceRecording} />
+      <Route path="/callback-scheduler" component={CallbackScheduler} />
+      <Route path="/number-porting" component={NumberPorting} />
+      <Route path="/network-quality" component={NetworkQuality} />
+      <Route path="/omnichannel" component={Omnichannel} />
+      <Route path="/gamification" component={Gamification} />
+      <Route path="/report-builder" component={ReportBuilder} />
+      <Route path="/ivr-analytics" component={IVRAnalytics} />
+      <Route path="/api-keys" component={APIKeys} />
+      <Route path="/sip-security" component={SIPSecurity} />
+      <Route path="/business-hours" component={BusinessHours} />
+      <Route path="/call-journey" component={CallJourney} />
+      <Route path="/auto-provisioning" component={AutoProvisioning} />
+      <Route path="/disaster-recovery" component={DisasterRecovery} />
+      <Route path="/conversation-intelligence" component={ConversationIntelligence} />
+      <Route path="/cost-analytics" component={CostAnalytics} />
+      <Route path="/tenants" component={Tenants} />
+      <Route path="/green-calling" component={GreenCalling} />
+      <Route path="/live-coaching" component={LiveCoaching} />
       <Route component={NotFound} />
     </Switch>
   );

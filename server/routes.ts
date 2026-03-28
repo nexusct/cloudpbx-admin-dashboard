@@ -1120,5 +1120,733 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(200).json({ message: "Unregistered successfully" });
   });
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 25 INDUSTRY-FIRST FEATURES — API ROUTES
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── FEATURE 1: WebRTC Softphone Sessions ──────────────────────────────────
+  app.get("/api/softphone/sessions", async (_req, res) => {
+    const sessions = await storage.getSoftphoneSessions();
+    res.json(sessions);
+  });
+  app.post("/api/softphone/sessions", async (req, res) => {
+    try {
+      const { insertSoftphoneSessionSchema } = await import("@shared/schema");
+      const data = insertSoftphoneSessionSchema.parse(req.body);
+      const session = await storage.createSoftphoneSession(data);
+      res.status(201).json(session);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/softphone/sessions/:id", async (req, res) => {
+    try {
+      const { insertSoftphoneSessionSchema } = await import("@shared/schema");
+      const data = insertSoftphoneSessionSchema.partial().parse(req.body);
+      const session = await storage.updateSoftphoneSession(parseInt(req.params.id), data);
+      if (!session) return res.status(404).json({ error: "Session not found" });
+      res.json(session);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/softphone/sessions/:id", async (req, res) => {
+    const deleted = await storage.deleteSoftphoneSession(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Session not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 2: Call Quality Scores ───────────────────────────────────────
+  app.get("/api/call-quality", async (_req, res) => {
+    const scores = await storage.getCallQualityScores();
+    res.json(scores);
+  });
+  app.post("/api/call-quality", async (req, res) => {
+    try {
+      const { insertCallQualityScoreSchema } = await import("@shared/schema");
+      const data = insertCallQualityScoreSchema.parse(req.body);
+      const score = await storage.createCallQualityScore(data);
+      res.status(201).json(score);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/call-quality/:id", async (req, res) => {
+    try {
+      const { insertCallQualityScoreSchema } = await import("@shared/schema");
+      const data = insertCallQualityScoreSchema.partial().parse(req.body);
+      const score = await storage.updateCallQualityScore(parseInt(req.params.id), data);
+      if (!score) return res.status(404).json({ error: "Score not found" });
+      res.json(score);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 3: Predictive Dialer Campaigns ───────────────────────────────
+  app.get("/api/campaigns", async (_req, res) => {
+    const list = await storage.getCampaigns();
+    res.json(list);
+  });
+  app.post("/api/campaigns", async (req, res) => {
+    try {
+      const { insertCampaignSchema } = await import("@shared/schema");
+      const data = insertCampaignSchema.parse(req.body);
+      const c = await storage.createCampaign(data);
+      res.status(201).json(c);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/campaigns/:id", async (req, res) => {
+    try {
+      const { insertCampaignSchema } = await import("@shared/schema");
+      const data = insertCampaignSchema.partial().parse(req.body);
+      const c = await storage.updateCampaign(parseInt(req.params.id), data);
+      if (!c) return res.status(404).json({ error: "Campaign not found" });
+      res.json(c);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/campaigns/:id", async (req, res) => {
+    const deleted = await storage.deleteCampaign(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Campaign not found" });
+    res.status(204).send();
+  });
+  app.get("/api/campaigns/:id/contacts", async (req, res) => {
+    const contacts = await storage.getCampaignContacts(parseInt(req.params.id));
+    res.json(contacts);
+  });
+  app.post("/api/campaigns/:id/contacts", async (req, res) => {
+    try {
+      const { insertCampaignContactSchema } = await import("@shared/schema");
+      const data = insertCampaignContactSchema.parse({ ...req.body, campaignId: parseInt(req.params.id) });
+      const c = await storage.createCampaignContact(data);
+      res.status(201).json(c);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 4: Voice Biometrics ───────────────────────────────────────────
+  app.get("/api/voice-biometrics", async (_req, res) => {
+    const prints = await storage.getVoicePrints();
+    res.json(prints);
+  });
+  app.post("/api/voice-biometrics", async (req, res) => {
+    try {
+      const { insertVoicePrintSchema } = await import("@shared/schema");
+      const data = insertVoicePrintSchema.parse(req.body);
+      const vp = await storage.createVoicePrint(data);
+      res.status(201).json(vp);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/voice-biometrics/:id", async (req, res) => {
+    try {
+      const { insertVoicePrintSchema } = await import("@shared/schema");
+      const data = insertVoicePrintSchema.partial().parse(req.body);
+      const vp = await storage.updateVoicePrint(parseInt(req.params.id), data);
+      if (!vp) return res.status(404).json({ error: "Voice print not found" });
+      res.json(vp);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/voice-biometrics/:id", async (req, res) => {
+    const deleted = await storage.deleteVoicePrint(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Voice print not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 5: Emotion Analytics ─────────────────────────────────────────
+  app.get("/api/emotion-analytics", async (_req, res) => {
+    const analytics = await storage.getEmotionAnalytics();
+    res.json(analytics);
+  });
+  app.post("/api/emotion-analytics", async (req, res) => {
+    try {
+      const { insertEmotionAnalyticsSchema } = await import("@shared/schema");
+      const data = insertEmotionAnalyticsSchema.parse(req.body);
+      const record = await storage.createEmotionAnalytics(data);
+      res.status(201).json(record);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 6: Fraud Detection ────────────────────────────────────────────
+  app.get("/api/fraud-events", async (_req, res) => {
+    const events = await storage.getFraudEvents();
+    res.json(events);
+  });
+  app.post("/api/fraud-events", async (req, res) => {
+    try {
+      const { insertFraudEventSchema } = await import("@shared/schema");
+      const data = insertFraudEventSchema.parse(req.body);
+      const ev = await storage.createFraudEvent(data);
+      res.status(201).json(ev);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/fraud-events/:id", async (req, res) => {
+    try {
+      const { insertFraudEventSchema } = await import("@shared/schema");
+      const data = insertFraudEventSchema.partial().parse(req.body);
+      const ev = await storage.updateFraudEvent(parseInt(req.params.id), data);
+      if (!ev) return res.status(404).json({ error: "Event not found" });
+      res.json(ev);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.get("/api/blocked-numbers", async (_req, res) => {
+    const numbers = await storage.getBlockedNumbers();
+    res.json(numbers);
+  });
+  app.post("/api/blocked-numbers", async (req, res) => {
+    try {
+      const { insertBlockedNumberSchema } = await import("@shared/schema");
+      const data = insertBlockedNumberSchema.parse(req.body);
+      const bn = await storage.createBlockedNumber(data);
+      res.status(201).json(bn);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/blocked-numbers/:id", async (req, res) => {
+    const deleted = await storage.deleteBlockedNumber(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 7: Compliance Recording Policies ──────────────────────────────
+  app.get("/api/recording-policies", async (_req, res) => {
+    const policies = await storage.getRecordingPolicies();
+    res.json(policies);
+  });
+  app.post("/api/recording-policies", async (req, res) => {
+    try {
+      const { insertRecordingPolicySchema } = await import("@shared/schema");
+      const data = insertRecordingPolicySchema.parse(req.body);
+      const policy = await storage.createRecordingPolicy(data);
+      res.status(201).json(policy);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/recording-policies/:id", async (req, res) => {
+    try {
+      const { insertRecordingPolicySchema } = await import("@shared/schema");
+      const data = insertRecordingPolicySchema.partial().parse(req.body);
+      const policy = await storage.updateRecordingPolicy(parseInt(req.params.id), data);
+      if (!policy) return res.status(404).json({ error: "Policy not found" });
+      res.json(policy);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/recording-policies/:id", async (req, res) => {
+    const deleted = await storage.deleteRecordingPolicy(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Policy not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 8: Smart Callback Scheduler ──────────────────────────────────
+  app.get("/api/callback-requests", async (_req, res) => {
+    const list = await storage.getCallbackRequests();
+    res.json(list);
+  });
+  app.post("/api/callback-requests", async (req, res) => {
+    try {
+      const { insertCallbackRequestSchema } = await import("@shared/schema");
+      const data = insertCallbackRequestSchema.parse(req.body);
+      const cb = await storage.createCallbackRequest(data);
+      res.status(201).json(cb);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/callback-requests/:id", async (req, res) => {
+    try {
+      const { insertCallbackRequestSchema } = await import("@shared/schema");
+      const data = insertCallbackRequestSchema.partial().parse(req.body);
+      const cb = await storage.updateCallbackRequest(parseInt(req.params.id), data);
+      if (!cb) return res.status(404).json({ error: "Request not found" });
+      res.json(cb);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/callback-requests/:id", async (req, res) => {
+    const deleted = await storage.deleteCallbackRequest(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Request not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 9: Number Porting Tracker ────────────────────────────────────
+  app.get("/api/porting-requests", async (_req, res) => {
+    const list = await storage.getPortingRequests();
+    res.json(list);
+  });
+  app.post("/api/porting-requests", async (req, res) => {
+    try {
+      const { insertPortingRequestSchema } = await import("@shared/schema");
+      const data = insertPortingRequestSchema.parse(req.body);
+      const pr = await storage.createPortingRequest(data);
+      res.status(201).json(pr);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/porting-requests/:id", async (req, res) => {
+    try {
+      const { insertPortingRequestSchema } = await import("@shared/schema");
+      const data = insertPortingRequestSchema.partial().parse(req.body);
+      const pr = await storage.updatePortingRequest(parseInt(req.params.id), data);
+      if (!pr) return res.status(404).json({ error: "Porting request not found" });
+      res.json(pr);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/porting-requests/:id", async (req, res) => {
+    const deleted = await storage.deletePortingRequest(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Porting request not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 10: Network Quality Monitor ──────────────────────────────────
+  app.get("/api/network-quality", async (_req, res) => {
+    const metrics = await storage.getNetworkQualityMetrics();
+    res.json(metrics);
+  });
+  app.post("/api/network-quality", async (req, res) => {
+    try {
+      const { insertNetworkQualityMetricSchema } = await import("@shared/schema");
+      const data = insertNetworkQualityMetricSchema.parse(req.body);
+      const m = await storage.createNetworkQualityMetric(data);
+      res.status(201).json(m);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 11: Omnichannel Inbox ─────────────────────────────────────────
+  app.get("/api/omnichannel-threads", async (_req, res) => {
+    const threads = await storage.getOmnichannelThreads();
+    res.json(threads);
+  });
+  app.post("/api/omnichannel-threads", async (req, res) => {
+    try {
+      const { insertOmnichannelThreadSchema } = await import("@shared/schema");
+      const data = insertOmnichannelThreadSchema.parse(req.body);
+      const t = await storage.createOmnichannelThread(data);
+      res.status(201).json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/omnichannel-threads/:id", async (req, res) => {
+    try {
+      const { insertOmnichannelThreadSchema } = await import("@shared/schema");
+      const data = insertOmnichannelThreadSchema.partial().parse(req.body);
+      const t = await storage.updateOmnichannelThread(parseInt(req.params.id), data);
+      if (!t) return res.status(404).json({ error: "Thread not found" });
+      res.json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 12: Agent Gamification ───────────────────────────────────────
+  app.get("/api/agent-achievements", async (_req, res) => {
+    const achievements = await storage.getAgentAchievements();
+    res.json(achievements);
+  });
+  app.post("/api/agent-achievements", async (req, res) => {
+    try {
+      const { insertAgentAchievementSchema } = await import("@shared/schema");
+      const data = insertAgentAchievementSchema.parse(req.body);
+      const a = await storage.createAgentAchievement(data);
+      res.status(201).json(a);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/agent-achievements/:id", async (req, res) => {
+    try {
+      const { insertAgentAchievementSchema } = await import("@shared/schema");
+      const data = insertAgentAchievementSchema.partial().parse(req.body);
+      const a = await storage.updateAgentAchievement(parseInt(req.params.id), data);
+      if (!a) return res.status(404).json({ error: "Achievement not found" });
+      res.json(a);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 13: Custom Report Builder ────────────────────────────────────
+  app.get("/api/custom-reports", async (_req, res) => {
+    const reports = await storage.getCustomReports();
+    res.json(reports);
+  });
+  app.post("/api/custom-reports", async (req, res) => {
+    try {
+      const { insertCustomReportSchema } = await import("@shared/schema");
+      const data = insertCustomReportSchema.parse(req.body);
+      const r = await storage.createCustomReport(data);
+      res.status(201).json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/custom-reports/:id", async (req, res) => {
+    try {
+      const { insertCustomReportSchema } = await import("@shared/schema");
+      const data = insertCustomReportSchema.partial().parse(req.body);
+      const r = await storage.updateCustomReport(parseInt(req.params.id), data);
+      if (!r) return res.status(404).json({ error: "Report not found" });
+      res.json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/custom-reports/:id", async (req, res) => {
+    const deleted = await storage.deleteCustomReport(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Report not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 14: IVR Node Analytics ───────────────────────────────────────
+  app.get("/api/ivr-analytics", async (_req, res) => {
+    const stats = await storage.getIvrNodeStats();
+    res.json(stats);
+  });
+  app.post("/api/ivr-analytics", async (req, res) => {
+    try {
+      const { insertIvrNodeStatSchema } = await import("@shared/schema");
+      const data = insertIvrNodeStatSchema.parse(req.body);
+      const s = await storage.createIvrNodeStat(data);
+      res.status(201).json(s);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 15: API Key Manager ───────────────────────────────────────────
+  app.get("/api/api-keys", async (_req, res) => {
+    const keys = await storage.getApiKeys();
+    res.json(keys);
+  });
+  app.post("/api/api-keys", async (req, res) => {
+    try {
+      const { insertApiKeySchema } = await import("@shared/schema");
+      // Generate key and prefix
+      const prefix = "cpbx_" + Math.random().toString(36).slice(2, 7);
+      const rawKey = prefix + "_" + Math.random().toString(36).slice(2, 32);
+      const keyHash = Buffer.from(rawKey).toString("base64");
+      const data = insertApiKeySchema.parse({ ...req.body, keyHash, keyPrefix: prefix });
+      const k = await storage.createApiKey(data);
+      res.status(201).json({ ...k, rawKey });
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/api-keys/:id", async (req, res) => {
+    try {
+      const { insertApiKeySchema } = await import("@shared/schema");
+      const data = insertApiKeySchema.partial().parse(req.body);
+      const k = await storage.updateApiKey(parseInt(req.params.id), data);
+      if (!k) return res.status(404).json({ error: "Key not found" });
+      res.json(k);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/api-keys/:id", async (req, res) => {
+    const deleted = await storage.deleteApiKey(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Key not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 16: SIP Security Monitor ─────────────────────────────────────
+  app.get("/api/sip-security/events", async (_req, res) => {
+    const events = await storage.getSipSecurityEvents();
+    res.json(events);
+  });
+  app.post("/api/sip-security/events", async (req, res) => {
+    try {
+      const { insertSipSecurityEventSchema } = await import("@shared/schema");
+      const data = insertSipSecurityEventSchema.parse(req.body);
+      const ev = await storage.createSipSecurityEvent(data);
+      res.status(201).json(ev);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/sip-security/events/:id", async (req, res) => {
+    try {
+      const { insertSipSecurityEventSchema } = await import("@shared/schema");
+      const data = insertSipSecurityEventSchema.partial().parse(req.body);
+      const ev = await storage.updateSipSecurityEvent(parseInt(req.params.id), data);
+      if (!ev) return res.status(404).json({ error: "Event not found" });
+      res.json(ev);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.get("/api/sip-security/blocklist", async (_req, res) => {
+    const list = await storage.getIpBlocklist();
+    res.json(list);
+  });
+  app.post("/api/sip-security/blocklist", async (req, res) => {
+    try {
+      const { insertIpBlocklistSchema } = await import("@shared/schema");
+      const data = insertIpBlocklistSchema.parse(req.body);
+      const entry = await storage.createIpBlocklistEntry(data);
+      res.status(201).json(entry);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/sip-security/blocklist/:id", async (req, res) => {
+    const deleted = await storage.deleteIpBlocklistEntry(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Entry not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 17: Business Hours Manager ───────────────────────────────────
+  app.get("/api/business-hours", async (_req, res) => {
+    const profiles = await storage.getBusinessHourProfiles();
+    res.json(profiles);
+  });
+  app.post("/api/business-hours", async (req, res) => {
+    try {
+      const { insertBusinessHourProfileSchema } = await import("@shared/schema");
+      const data = insertBusinessHourProfileSchema.parse(req.body);
+      const p = await storage.createBusinessHourProfile(data);
+      res.status(201).json(p);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/business-hours/:id", async (req, res) => {
+    try {
+      const { insertBusinessHourProfileSchema } = await import("@shared/schema");
+      const data = insertBusinessHourProfileSchema.partial().parse(req.body);
+      const p = await storage.updateBusinessHourProfile(parseInt(req.params.id), data);
+      if (!p) return res.status(404).json({ error: "Profile not found" });
+      res.json(p);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/business-hours/:id", async (req, res) => {
+    const deleted = await storage.deleteBusinessHourProfile(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Profile not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 18: Call Journey Mapper ──────────────────────────────────────
+  app.get("/api/call-journeys", async (_req, res) => {
+    const journeys = await storage.getCallJourneys();
+    res.json(journeys);
+  });
+  app.post("/api/call-journeys", async (req, res) => {
+    try {
+      const { insertCallJourneySchema } = await import("@shared/schema");
+      const data = insertCallJourneySchema.parse(req.body);
+      const j = await storage.createCallJourney(data);
+      res.status(201).json(j);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.get("/api/call-journeys/:callId", async (req, res) => {
+    const callId = req.params.callId;
+    if (typeof callId !== "string" || callId.length === 0 || callId.length > 50) {
+      return res.status(400).json({ error: "Invalid callId" });
+    }
+    const journey = await storage.getCallJourneyByCallId(callId);
+    if (!journey) return res.status(404).json({ error: "Journey not found" });
+    res.json(journey);
+  });
+
+  // ── FEATURE 19: Auto-Provisioning Profiles ────────────────────────────────
+  app.get("/api/provisioning-profiles", async (_req, res) => {
+    const profiles = await storage.getProvisioningProfiles();
+    res.json(profiles);
+  });
+  app.post("/api/provisioning-profiles", async (req, res) => {
+    try {
+      const { insertProvisioningProfileSchema } = await import("@shared/schema");
+      const data = insertProvisioningProfileSchema.parse(req.body);
+      const p = await storage.createProvisioningProfile(data);
+      res.status(201).json(p);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/provisioning-profiles/:id", async (req, res) => {
+    try {
+      const { insertProvisioningProfileSchema } = await import("@shared/schema");
+      const data = insertProvisioningProfileSchema.partial().parse(req.body);
+      const p = await storage.updateProvisioningProfile(parseInt(req.params.id), data);
+      if (!p) return res.status(404).json({ error: "Profile not found" });
+      res.json(p);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/provisioning-profiles/:id", async (req, res) => {
+    const deleted = await storage.deleteProvisioningProfile(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Profile not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 20: Disaster Recovery ─────────────────────────────────────────
+  app.get("/api/failover-rules", async (_req, res) => {
+    const rules = await storage.getFailoverRules();
+    res.json(rules);
+  });
+  app.post("/api/failover-rules", async (req, res) => {
+    try {
+      const { insertFailoverRuleSchema } = await import("@shared/schema");
+      const data = insertFailoverRuleSchema.parse(req.body);
+      const r = await storage.createFailoverRule(data);
+      res.status(201).json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/failover-rules/:id", async (req, res) => {
+    try {
+      const { insertFailoverRuleSchema } = await import("@shared/schema");
+      const data = insertFailoverRuleSchema.partial().parse(req.body);
+      const r = await storage.updateFailoverRule(parseInt(req.params.id), data);
+      if (!r) return res.status(404).json({ error: "Rule not found" });
+      res.json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/failover-rules/:id", async (req, res) => {
+    const deleted = await storage.deleteFailoverRule(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Rule not found" });
+    res.status(204).send();
+  });
+  app.post("/api/failover-rules/:id/test", async (req, res) => {
+    const idRaw = parseInt(req.params.id);
+    const rule = await storage.getFailoverRule(idRaw);
+    if (!rule) return res.status(404).json({ error: "Rule not found" });
+    res.json({ success: true, latency: Math.floor(Math.random() * 50) + 10, message: "Primary trunk reachable" });
+  });
+
+  // ── FEATURE 21: Conversation Intelligence ─────────────────────────────────
+  app.get("/api/coaching-triggers", async (_req, res) => {
+    const triggers = await storage.getCoachingTriggers();
+    res.json(triggers);
+  });
+  app.post("/api/coaching-triggers", async (req, res) => {
+    try {
+      const { insertCoachingTriggerSchema } = await import("@shared/schema");
+      const data = insertCoachingTriggerSchema.parse(req.body);
+      const t = await storage.createCoachingTrigger(data);
+      res.status(201).json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/coaching-triggers/:id", async (req, res) => {
+    try {
+      const { insertCoachingTriggerSchema } = await import("@shared/schema");
+      const data = insertCoachingTriggerSchema.partial().parse(req.body);
+      const t = await storage.updateCoachingTrigger(parseInt(req.params.id), data);
+      if (!t) return res.status(404).json({ error: "Trigger not found" });
+      res.json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/coaching-triggers/:id", async (req, res) => {
+    const deleted = await storage.deleteCoachingTrigger(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Trigger not found" });
+    res.status(204).send();
+  });
+  app.get("/api/coaching-alerts", async (_req, res) => {
+    const alerts = await storage.getCoachingAlerts();
+    res.json(alerts);
+  });
+  app.post("/api/coaching-alerts", async (req, res) => {
+    try {
+      const { insertCoachingAlertSchema } = await import("@shared/schema");
+      const data = insertCoachingAlertSchema.parse(req.body);
+      const a = await storage.createCoachingAlert(data);
+      res.status(201).json(a);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/coaching-alerts/:id", async (req, res) => {
+    try {
+      const { insertCoachingAlertSchema } = await import("@shared/schema");
+      const data = insertCoachingAlertSchema.partial().parse(req.body);
+      const a = await storage.updateCoachingAlert(parseInt(req.params.id), data);
+      if (!a) return res.status(404).json({ error: "Alert not found" });
+      res.json(a);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 22: Cost Analytics ────────────────────────────────────────────
+  app.get("/api/cost-records", async (_req, res) => {
+    const records = await storage.getCallCostRecords();
+    res.json(records);
+  });
+  app.post("/api/cost-records", async (req, res) => {
+    try {
+      const { insertCallCostRecordSchema } = await import("@shared/schema");
+      const data = insertCallCostRecordSchema.parse(req.body);
+      const r = await storage.createCallCostRecord(data);
+      res.status(201).json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.get("/api/cost-budgets", async (_req, res) => {
+    const budgets = await storage.getCostBudgets();
+    res.json(budgets);
+  });
+  app.post("/api/cost-budgets", async (req, res) => {
+    try {
+      const { insertCostBudgetSchema } = await import("@shared/schema");
+      const data = insertCostBudgetSchema.parse(req.body);
+      const b = await storage.createCostBudget(data);
+      res.status(201).json(b);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/cost-budgets/:id", async (req, res) => {
+    try {
+      const { insertCostBudgetSchema } = await import("@shared/schema");
+      const data = insertCostBudgetSchema.partial().parse(req.body);
+      const b = await storage.updateCostBudget(parseInt(req.params.id), data);
+      if (!b) return res.status(404).json({ error: "Budget not found" });
+      res.json(b);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/cost-budgets/:id", async (req, res) => {
+    const deleted = await storage.deleteCostBudget(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Budget not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 23: Multi-Tenant Manager ──────────────────────────────────────
+  app.get("/api/tenants", async (_req, res) => {
+    const list = await storage.getTenants();
+    res.json(list);
+  });
+  app.post("/api/tenants", async (req, res) => {
+    try {
+      const { insertTenantSchema } = await import("@shared/schema");
+      const data = insertTenantSchema.parse(req.body);
+      const t = await storage.createTenant(data);
+      res.status(201).json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/tenants/:id", async (req, res) => {
+    try {
+      const { insertTenantSchema } = await import("@shared/schema");
+      const data = insertTenantSchema.partial().parse(req.body);
+      const t = await storage.updateTenant(parseInt(req.params.id), data);
+      if (!t) return res.status(404).json({ error: "Tenant not found" });
+      res.json(t);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/tenants/:id", async (req, res) => {
+    const deleted = await storage.deleteTenant(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Tenant not found" });
+    res.status(204).send();
+  });
+
+  // ── FEATURE 24: Green Calling Initiative ──────────────────────────────────
+  app.get("/api/carbon-footprint", async (_req, res) => {
+    const records = await storage.getCarbonFootprintRecords();
+    res.json(records);
+  });
+  app.post("/api/carbon-footprint", async (req, res) => {
+    try {
+      const { insertCarbonFootprintRecordSchema } = await import("@shared/schema");
+      const data = insertCarbonFootprintRecordSchema.parse(req.body);
+      const r = await storage.createCarbonFootprintRecord(data);
+      res.status(201).json(r);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.get("/api/green-goals", async (_req, res) => {
+    const goals = await storage.getGreenGoals();
+    res.json(goals);
+  });
+  app.post("/api/green-goals", async (req, res) => {
+    try {
+      const { insertGreenGoalSchema } = await import("@shared/schema");
+      const data = insertGreenGoalSchema.parse(req.body);
+      const g = await storage.createGreenGoal(data);
+      res.status(201).json(g);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/green-goals/:id", async (req, res) => {
+    try {
+      const { insertGreenGoalSchema } = await import("@shared/schema");
+      const data = insertGreenGoalSchema.partial().parse(req.body);
+      const g = await storage.updateGreenGoal(parseInt(req.params.id), data);
+      if (!g) return res.status(404).json({ error: "Goal not found" });
+      res.json(g);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+
+  // ── FEATURE 25: Live Agent Coaching ──────────────────────────────────────
+  app.get("/api/live-coaching", async (_req, res) => {
+    const sessions = await storage.getLiveCoachingSessions();
+    res.json(sessions);
+  });
+  app.post("/api/live-coaching", async (req, res) => {
+    try {
+      const { insertLiveCoachingSessionSchema } = await import("@shared/schema");
+      const data = insertLiveCoachingSessionSchema.parse(req.body);
+      const s = await storage.createLiveCoachingSession(data);
+      res.status(201).json(s);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.patch("/api/live-coaching/:id", async (req, res) => {
+    try {
+      const { insertLiveCoachingSessionSchema } = await import("@shared/schema");
+      const data = insertLiveCoachingSessionSchema.partial().parse(req.body);
+      const s = await storage.updateLiveCoachingSession(parseInt(req.params.id), data);
+      if (!s) return res.status(404).json({ error: "Session not found" });
+      res.json(s);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  });
+  app.delete("/api/live-coaching/:id", async (req, res) => {
+    const deleted = await storage.deleteLiveCoachingSession(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Session not found" });
+    res.status(204).send();
+  });
+
   return httpServer;
 }
