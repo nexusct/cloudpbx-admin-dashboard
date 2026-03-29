@@ -1120,5 +1120,106 @@ Be helpful, concise, and provide step-by-step guidance when needed. If users nee
     res.status(200).json({ message: "Unregistered successfully" });
   });
 
+  // Tenant Management Routes
+  app.get("/api/tenants", async (req, res) => {
+    const tenants = await storage.getTenants();
+    res.json(tenants);
+  });
+
+  app.get("/api/tenants/:id", async (req, res) => {
+    const tenant = await storage.getTenant(req.params.id);
+    if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+    res.json(tenant);
+  });
+
+  app.post("/api/tenants", async (req, res) => {
+    try {
+      const { insertTenantSchema } = await import("@shared/schema");
+      const validatedData = insertTenantSchema.parse(req.body);
+      const tenant = await storage.createTenant(validatedData);
+      res.status(201).json(tenant);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid request data" });
+    }
+  });
+
+  app.patch("/api/tenants/:id", async (req, res) => {
+    try {
+      const { insertTenantSchema } = await import("@shared/schema");
+      const validatedData = insertTenantSchema.partial().parse(req.body);
+      const tenant = await storage.updateTenant(req.params.id, validatedData);
+      if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+      res.json(tenant);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid request data" });
+    }
+  });
+
+  app.delete("/api/tenants/:id", async (req, res) => {
+    const deleted = await storage.deleteTenant(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Tenant not found" });
+    res.status(204).send();
+  });
+
+  // Server Management Routes
+  app.get("/api/servers", async (req, res) => {
+    const tenantId = req.query.tenantId as string | undefined;
+    const servers = await storage.getServers(tenantId);
+    res.json(servers);
+  });
+
+  app.get("/api/servers/:id", async (req, res) => {
+    const server = await storage.getServer(parseInt(req.params.id));
+    if (!server) return res.status(404).json({ error: "Server not found" });
+    res.json(server);
+  });
+
+  app.post("/api/servers", async (req, res) => {
+    try {
+      const { insertServerSchema } = await import("@shared/schema");
+      const validatedData = insertServerSchema.parse(req.body);
+      const server = await storage.createServer(validatedData);
+      res.status(201).json(server);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid request data" });
+    }
+  });
+
+  app.patch("/api/servers/:id", async (req, res) => {
+    try {
+      const { insertServerSchema } = await import("@shared/schema");
+      const validatedData = insertServerSchema.partial().parse(req.body);
+      const server = await storage.updateServer(parseInt(req.params.id), validatedData);
+      if (!server) return res.status(404).json({ error: "Server not found" });
+      res.json(server);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid request data" });
+    }
+  });
+
+  app.delete("/api/servers/:id", async (req, res) => {
+    const deleted = await storage.deleteServer(parseInt(req.params.id));
+    if (!deleted) return res.status(404).json({ error: "Server not found" });
+    res.status(204).send();
+  });
+
+  // Server health check endpoint
+  app.post("/api/servers/:id/health", async (req, res) => {
+    const server = await storage.getServer(parseInt(req.params.id));
+    if (!server) return res.status(404).json({ error: "Server not found" });
+
+    try {
+      // TODO: Implement actual health check by making a request to the server
+      // For now, just update the lastHealthCheck timestamp
+      const updated = await storage.updateServer(server.id, {
+        lastHealthCheck: new Date(),
+        status: "online", // In real implementation, this would be determined by the health check
+      });
+      res.json(updated);
+    } catch (error: any) {
+      res.status(500).json({ error: "Health check failed" });
+    }
+  });
+
   return httpServer;
 }
