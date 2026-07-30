@@ -119,6 +119,7 @@ export default function Queues() {
 
   const handleCreate = () => {
     createMutation.mutate({
+      tenantId: "default", // TODO: Get from authentication context
       name: formName,
       number: formNumber,
       strategy: formStrategy,

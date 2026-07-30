@@ -109,7 +109,7 @@ export class SipRuntimeService {
   /** Remove all expired registrations from the in-memory store. */
   pruneExpired(): void {
     const now = this.now();
-    for (const [key, entry] of this.registrations) {
+    for (const [key, entry] of Array.from(this.registrations.entries())) {
       if (entry.expiresAt <= now) {
         this.registrations.delete(key);
       }

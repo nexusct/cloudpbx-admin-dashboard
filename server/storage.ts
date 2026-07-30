@@ -30,12 +30,15 @@ import {
   type SpeedDial, type InsertSpeedDial,
   type AiAgent, type InsertAiAgent,
   type AiAgentCall, type InsertAiAgentCall,
+  type Tenant, type InsertTenant,
+  type Server, type InsertServer,
   users, extensions, dids, callFlows, devices, callLogs,
   smsMessages, faxMessages, integrations, aiSessions, aiMessages,
   ringGroups, callQueues, systemSettings, contacts, voicemails,
   callTranscriptions, routingRules, webhooks, agentStatus, queueStats, parkingSlots,
   sipProviders, sipTrunks, deviceTemplates, integrationConnections,
   holidaySchedules, callDispositions, speedDials, aiAgents, aiAgentCalls,
+  tenants, servers,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -44,6 +47,19 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  getTenants(): Promise<Tenant[]>;
+  getTenant(id: string): Promise<Tenant | undefined>;
+  getTenantBySlug(slug: string): Promise<Tenant | undefined>;
+  createTenant(tenant: InsertTenant): Promise<Tenant>;
+  updateTenant(id: string, tenant: Partial<InsertTenant>): Promise<Tenant | undefined>;
+  deleteTenant(id: string): Promise<boolean>;
+
+  getServers(tenantId?: string): Promise<Server[]>;
+  getServer(id: number): Promise<Server | undefined>;
+  createServer(server: InsertServer): Promise<Server>;
+  updateServer(id: number, server: Partial<Server>): Promise<Server | undefined>;
+  deleteServer(id: number): Promise<boolean>;
 
   getExtensions(): Promise<Extension[]>;
   getExtension(id: number): Promise<Extension | undefined>;
@@ -220,6 +236,64 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  // Tenant management
+  async getTenants(): Promise<Tenant[]> {
+    return db.select().from(tenants);
+  }
+
+  async getTenant(id: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.id, id));
+    return tenant;
+  }
+
+  async getTenantBySlug(slug: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.slug, slug));
+    return tenant;
+  }
+
+  async createTenant(insertTenant: InsertTenant): Promise<Tenant> {
+    const [tenant] = await db.insert(tenants).values(insertTenant).returning();
+    return tenant;
+  }
+
+  async updateTenant(id: string, data: Partial<InsertTenant>): Promise<Tenant | undefined> {
+    const [tenant] = await db.update(tenants).set(data).where(eq(tenants.id, id)).returning();
+    return tenant;
+  }
+
+  async deleteTenant(id: string): Promise<boolean> {
+    const result = await db.delete(tenants).where(eq(tenants.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Server management
+  async getServers(tenantId?: string): Promise<Server[]> {
+    if (tenantId) {
+      return db.select().from(servers).where(eq(servers.tenantId, tenantId));
+    }
+    return db.select().from(servers);
+  }
+
+  async getServer(id: number): Promise<Server | undefined> {
+    const [server] = await db.select().from(servers).where(eq(servers.id, id));
+    return server;
+  }
+
+  async createServer(insertServer: InsertServer): Promise<Server> {
+    const [server] = await db.insert(servers).values(insertServer).returning();
+    return server;
+  }
+
+  async updateServer(id: number, data: Partial<Server>): Promise<Server | undefined> {
+    const [server] = await db.update(servers).set(data).where(eq(servers.id, id)).returning();
+    return server;
+  }
+
+  async deleteServer(id: number): Promise<boolean> {
+    const result = await db.delete(servers).where(eq(servers.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   async getExtensions(): Promise<Extension[]> {
@@ -857,15 +931,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async seedInitialData(): Promise<void> {
+    // Create default tenant if it doesn't exist
+    let defaultTenant = await db.query.tenants.findFirst({
+      where: eq(tenants.slug, 'default')
+    });
+
+    if (!defaultTenant) {
+      const [tenant] = await db.insert(tenants).values({
+        name: "Default Organization",
+        slug: "default",
+        description: "Default organization for initial setup",
+        status: "active",
+        plan: "standard",
+      }).returning();
+      defaultTenant = tenant;
+    }
+
+    const defaultTenantId = defaultTenant.id;
+
     const existingExtensions = await this.getExtensions();
     if (existingExtensions.length === 0) {
       const extensionsData: InsertExtension[] = [
-        { number: "101", name: "John Smith", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "John Smith", callerIdNumber: "+15551234567", department: "Sales", location: "HQ" },
-        { number: "102", name: "Sarah Johnson", type: "sip", status: "busy", voicemailEnabled: true, callForwardingEnabled: true, callForwardingNumber: "+15559876543", ringTimeout: 20, callerIdName: "Sarah Johnson", callerIdNumber: "+15551234568", department: "Support", location: "HQ" },
-        { number: "103", name: "Mike Brown", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "Mike Brown", callerIdNumber: "+15551234569", department: "Marketing", location: "Remote" },
-        { number: "104", name: "Emily Davis", type: "webrtc", status: "away", voicemailEnabled: false, callForwardingEnabled: false, ringTimeout: 25, callerIdName: "Emily Davis", callerIdNumber: "+15551234570", department: "Sales", location: "HQ" },
-        { number: "105", name: "Chris Wilson", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "Chris Wilson", callerIdNumber: "+15551234571", department: "Support", location: "HQ" },
-        { number: "106", name: "Reception", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 15, callerIdName: "Main Reception", callerIdNumber: "+15551234500", department: "Admin", location: "HQ" },
+        { tenantId: defaultTenantId, number: "101", name: "John Smith", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "John Smith", callerIdNumber: "+15551234567", department: "Sales", location: "HQ" },
+        { tenantId: defaultTenantId, number: "102", name: "Sarah Johnson", type: "sip", status: "busy", voicemailEnabled: true, callForwardingEnabled: true, callForwardingNumber: "+15559876543", ringTimeout: 20, callerIdName: "Sarah Johnson", callerIdNumber: "+15551234568", department: "Support", location: "HQ" },
+        { tenantId: defaultTenantId, number: "103", name: "Mike Brown", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "Mike Brown", callerIdNumber: "+15551234569", department: "Marketing", location: "Remote" },
+        { tenantId: defaultTenantId, number: "104", name: "Emily Davis", type: "webrtc", status: "away", voicemailEnabled: false, callForwardingEnabled: false, ringTimeout: 25, callerIdName: "Emily Davis", callerIdNumber: "+15551234570", department: "Sales", location: "HQ" },
+        { tenantId: defaultTenantId, number: "105", name: "Chris Wilson", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 30, callerIdName: "Chris Wilson", callerIdNumber: "+15551234571", department: "Support", location: "HQ" },
+        { tenantId: defaultTenantId, number: "106", name: "Reception", type: "sip", status: "online", voicemailEnabled: true, callForwardingEnabled: false, ringTimeout: 15, callerIdName: "Main Reception", callerIdNumber: "+15551234500", department: "Admin", location: "HQ" },
       ];
       for (const ext of extensionsData) {
         await this.createExtension(ext);
@@ -875,9 +967,9 @@ export class DatabaseStorage implements IStorage {
     const existingDids = await this.getDids();
     if (existingDids.length === 0) {
       const didsData: InsertDid[] = [
-        { number: "+15551234567", country: "US", city: "New York", state: "NY", provider: "Twilio", status: "active", type: "local", monthlyRate: 100, assignedTo: "Main IVR", assignedType: "call_flow", smsEnabled: true, faxEnabled: false, e911Enabled: true },
-        { number: "+15559876543", country: "US", city: "Los Angeles", state: "CA", provider: "Twilio", status: "active", type: "local", monthlyRate: 100, assignedTo: "Sales Queue", assignedType: "queue", smsEnabled: true, faxEnabled: false, e911Enabled: true },
-        { number: "+18005551234", country: "US", provider: "Bandwidth", status: "active", type: "toll_free", monthlyRate: 300, assignedTo: "Support", assignedType: "extension", smsEnabled: false, faxEnabled: false, e911Enabled: false },
+        { tenantId: defaultTenantId, number: "+15551234567", country: "US", city: "New York", state: "NY", provider: "Twilio", status: "active", type: "local", monthlyRate: 100, assignedTo: "Main IVR", assignedType: "call_flow", smsEnabled: true, faxEnabled: false, e911Enabled: true },
+        { tenantId: defaultTenantId, number: "+15559876543", country: "US", city: "Los Angeles", state: "CA", provider: "Twilio", status: "active", type: "local", monthlyRate: 100, assignedTo: "Sales Queue", assignedType: "queue", smsEnabled: true, faxEnabled: false, e911Enabled: true },
+        { tenantId: defaultTenantId, number: "+18005551234", country: "US", provider: "Bandwidth", status: "active", type: "toll_free", monthlyRate: 300, assignedTo: "Support", assignedType: "extension", smsEnabled: false, faxEnabled: false, e911Enabled: false },
       ];
       for (const did of didsData) {
         await this.createDid(did);
@@ -887,8 +979,8 @@ export class DatabaseStorage implements IStorage {
     const existingRingGroups = await this.getRingGroups();
     if (existingRingGroups.length === 0) {
       const ringGroupsData: InsertRingGroup[] = [
-        { name: "Sales Team", number: "200", strategy: "simultaneous", ringTimeout: 20, members: ["101", "102", "104"], enabled: true },
-        { name: "Support Team", number: "201", strategy: "round_robin", ringTimeout: 25, members: ["103", "105"], enabled: true },
+        { tenantId: defaultTenantId, name: "Sales Team", number: "200", strategy: "simultaneous", ringTimeout: 20, members: ["101", "102", "104"], enabled: true },
+        { tenantId: defaultTenantId, name: "Support Team", number: "201", strategy: "round_robin", ringTimeout: 25, members: ["103", "105"], enabled: true },
       ];
       for (const rg of ringGroupsData) {
         await this.createRingGroup(rg);
@@ -898,8 +990,8 @@ export class DatabaseStorage implements IStorage {
     const existingCallQueues = await this.getCallQueues();
     if (existingCallQueues.length === 0) {
       const callQueuesData: InsertCallQueue[] = [
-        { name: "Sales Queue", number: "300", strategy: "round_robin", maxWaitTime: 300, maxCallers: 50, agents: ["101", "102", "104"], announcePosition: true, enabled: true },
-        { name: "Support Queue", number: "301", strategy: "least_calls", maxWaitTime: 600, maxCallers: 100, agents: ["103", "105", "106"], announcePosition: true, enabled: true },
+        { tenantId: defaultTenantId, name: "Sales Queue", number: "300", strategy: "round_robin", maxWaitTime: 300, maxCallers: 50, agents: ["101", "102", "104"], announcePosition: true, enabled: true },
+        { tenantId: defaultTenantId, name: "Support Queue", number: "301", strategy: "least_calls", maxWaitTime: 600, maxCallers: 100, agents: ["103", "105", "106"], announcePosition: true, enabled: true },
       ];
       for (const cq of callQueuesData) {
         await this.createCallQueue(cq);
@@ -909,11 +1001,11 @@ export class DatabaseStorage implements IStorage {
     const existingContacts = await this.getContacts();
     if (existingContacts.length === 0) {
       const contactsData: InsertContact[] = [
-        { firstName: "Robert", lastName: "Anderson", company: "Tech Corp", email: "robert@techcorp.com", phoneNumbers: [{ type: "work", number: "+15551112222" }, { type: "mobile", number: "+15552223333" }], isVip: true, doNotCall: false, notes: "Key account, priority support" },
-        { firstName: "Jennifer", lastName: "Martinez", company: "Acme Inc", email: "jennifer@acme.com", phoneNumbers: [{ type: "work", number: "+15553334444" }], isVip: false, doNotCall: false },
-        { firstName: "David", lastName: "Thompson", company: "Global Solutions", email: "david@globalsolutions.com", phoneNumbers: [{ type: "work", number: "+15554445555" }, { type: "mobile", number: "+15555556666" }], isVip: false, doNotCall: false, notes: "Software vendor contact" },
-        { firstName: "Lisa", lastName: "Garcia", email: "lisa.garcia@email.com", phoneNumbers: [{ type: "home", number: "+15556667777" }], isVip: false, doNotCall: true, notes: "Requested no marketing calls" },
-        { firstName: "Michael", lastName: "Chen", company: "Enterprise Systems", email: "mchen@enterprise.com", phoneNumbers: [{ type: "work", number: "+15557778888" }], isVip: true, doNotCall: false },
+        { tenantId: defaultTenantId, firstName: "Robert", lastName: "Anderson", company: "Tech Corp", email: "robert@techcorp.com", phoneNumbers: [{ type: "work", number: "+15551112222" }, { type: "mobile", number: "+15552223333" }], isVip: true, doNotCall: false, notes: "Key account, priority support" },
+        { tenantId: defaultTenantId, firstName: "Jennifer", lastName: "Martinez", company: "Acme Inc", email: "jennifer@acme.com", phoneNumbers: [{ type: "work", number: "+15553334444" }], isVip: false, doNotCall: false },
+        { tenantId: defaultTenantId, firstName: "David", lastName: "Thompson", company: "Global Solutions", email: "david@globalsolutions.com", phoneNumbers: [{ type: "work", number: "+15554445555" }, { type: "mobile", number: "+15555556666" }], isVip: false, doNotCall: false, notes: "Software vendor contact" },
+        { tenantId: defaultTenantId, firstName: "Lisa", lastName: "Garcia", email: "lisa.garcia@email.com", phoneNumbers: [{ type: "home", number: "+15556667777" }], isVip: false, doNotCall: true, notes: "Requested no marketing calls" },
+        { tenantId: defaultTenantId, firstName: "Michael", lastName: "Chen", company: "Enterprise Systems", email: "mchen@enterprise.com", phoneNumbers: [{ type: "work", number: "+15557778888" }], isVip: true, doNotCall: false },
       ];
       for (const contact of contactsData) {
         await this.createContact(contact);
@@ -923,10 +1015,10 @@ export class DatabaseStorage implements IStorage {
     const existingVoicemails = await this.getVoicemails();
     if (existingVoicemails.length === 0) {
       const voicemailsData: InsertVoicemail[] = [
-        { extensionId: 1, callerNumber: "+15551112222", callerName: "Robert Anderson", duration: 45, audioUrl: "/voicemails/vm1.wav", transcription: "Hi, this is Robert from Tech Corp. I wanted to follow up on our meeting yesterday. Please give me a call back when you get a chance. Thanks!", isRead: false, isUrgent: true },
-        { extensionId: 1, callerNumber: "+15553334444", callerName: "Jennifer Martinez", duration: 32, audioUrl: "/voicemails/vm2.wav", transcription: "Hey, Jennifer here. Just checking in about the proposal. Let me know if you need any additional information.", isRead: false, isUrgent: false },
-        { extensionId: 2, callerNumber: "+15554445555", callerName: "David Thompson", duration: 28, audioUrl: "/voicemails/vm3.wav", transcription: "This is David from Global Solutions. I have an update on the software delivery schedule. Call me back at your convenience.", isRead: true, isUrgent: false },
-        { extensionId: 3, callerNumber: "+15557778888", callerName: "Michael Chen", duration: 58, audioUrl: "/voicemails/vm4.wav", transcription: "Hi, Michael Chen here. Urgent matter regarding the enterprise license renewal. Please call me back as soon as possible.", isRead: false, isUrgent: true },
+        { tenantId: defaultTenantId, extensionId: 1, callerNumber: "+15551112222", callerName: "Robert Anderson", duration: 45, audioUrl: "/voicemails/vm1.wav", transcription: "Hi, this is Robert from Tech Corp. I wanted to follow up on our meeting yesterday. Please give me a call back when you get a chance. Thanks!", isRead: false, isUrgent: true },
+        { tenantId: defaultTenantId, extensionId: 1, callerNumber: "+15553334444", callerName: "Jennifer Martinez", duration: 32, audioUrl: "/voicemails/vm2.wav", transcription: "Hey, Jennifer here. Just checking in about the proposal. Let me know if you need any additional information.", isRead: false, isUrgent: false },
+        { tenantId: defaultTenantId, extensionId: 2, callerNumber: "+15554445555", callerName: "David Thompson", duration: 28, audioUrl: "/voicemails/vm3.wav", transcription: "This is David from Global Solutions. I have an update on the software delivery schedule. Call me back at your convenience.", isRead: true, isUrgent: false },
+        { tenantId: defaultTenantId, extensionId: 3, callerNumber: "+15557778888", callerName: "Michael Chen", duration: 58, audioUrl: "/voicemails/vm4.wav", transcription: "Hi, Michael Chen here. Urgent matter regarding the enterprise license renewal. Please call me back as soon as possible.", isRead: false, isUrgent: true },
       ];
       for (const vm of voicemailsData) {
         await db.insert(voicemails).values(vm);
@@ -936,10 +1028,10 @@ export class DatabaseStorage implements IStorage {
     const existingRoutingRules = await this.getRoutingRules();
     if (existingRoutingRules.length === 0) {
       const routingRulesData: InsertRoutingRule[] = [
-        { name: "Business Hours", description: "Route calls during business hours", type: "time", action: "forward", destination: "200", priority: 100, enabled: true, conditions: { startTime: "09:00", endTime: "17:00", days: ["monday", "tuesday", "wednesday", "thursday", "friday"] } },
-        { name: "After Hours", description: "Route calls to voicemail after hours", type: "time", action: "voicemail", destination: "voicemail", priority: 50, enabled: true, conditions: { startTime: "17:00", endTime: "09:00", days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] } },
-        { name: "VIP Callers", description: "Priority routing for VIP customers", type: "caller_id", action: "forward", destination: "101", priority: 200, enabled: true, conditions: { callerIds: ["+15551112222", "+15557778888"] } },
-        { name: "Weekend Support", description: "Weekend call handling", type: "time", action: "queue", destination: "301", priority: 75, enabled: true, conditions: { startTime: "09:00", endTime: "17:00", days: ["saturday", "sunday"] } },
+        { tenantId: defaultTenantId, name: "Business Hours", description: "Route calls during business hours", type: "time", action: "forward", destination: "200", priority: 100, enabled: true, conditions: { startTime: "09:00", endTime: "17:00", days: ["monday", "tuesday", "wednesday", "thursday", "friday"] } },
+        { tenantId: defaultTenantId, name: "After Hours", description: "Route calls to voicemail after hours", type: "time", action: "voicemail", destination: "voicemail", priority: 50, enabled: true, conditions: { startTime: "17:00", endTime: "09:00", days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] } },
+        { tenantId: defaultTenantId, name: "VIP Callers", description: "Priority routing for VIP customers", type: "caller_id", action: "forward", destination: "101", priority: 200, enabled: true, conditions: { callerIds: ["+15551112222", "+15557778888"] } },
+        { tenantId: defaultTenantId, name: "Weekend Support", description: "Weekend call handling", type: "time", action: "queue", destination: "301", priority: 75, enabled: true, conditions: { startTime: "09:00", endTime: "17:00", days: ["saturday", "sunday"] } },
       ];
       for (const rule of routingRulesData) {
         await this.createRoutingRule(rule);
@@ -949,9 +1041,9 @@ export class DatabaseStorage implements IStorage {
     const existingWebhooks = await this.getWebhooks();
     if (existingWebhooks.length === 0) {
       const webhooksData: InsertWebhook[] = [
-        { name: "CRM Integration", url: "https://api.example-crm.com/webhooks/calls", events: ["call.started", "call.ended", "call.missed"], secret: "whsec_abc123", enabled: true },
-        { name: "Slack Notifications", url: "https://hooks.slack.com/services/T00000000/B00000000/XXXX", events: ["voicemail.received", "call.missed"], secret: "whsec_def456", enabled: true },
-        { name: "Analytics Platform", url: "https://analytics.example.com/ingest/pbx", events: ["call.started", "call.answered", "call.ended", "sms.received", "sms.sent"], secret: "whsec_ghi789", enabled: false },
+        { tenantId: defaultTenantId, name: "CRM Integration", url: "https://api.example-crm.com/webhooks/calls", events: ["call.started", "call.ended", "call.missed"], secret: "whsec_abc123", enabled: true },
+        { tenantId: defaultTenantId, name: "Slack Notifications", url: "https://hooks.slack.com/services/T00000000/B00000000/XXXX", events: ["voicemail.received", "call.missed"], secret: "whsec_def456", enabled: true },
+        { tenantId: defaultTenantId, name: "Analytics Platform", url: "https://analytics.example.com/ingest/pbx", events: ["call.started", "call.answered", "call.ended", "sms.received", "sms.sent"], secret: "whsec_ghi789", enabled: false },
       ];
       for (const webhook of webhooksData) {
         await this.createWebhook(webhook);
