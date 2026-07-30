@@ -73,6 +73,47 @@ npm run dev
 
 ---
 
+## 🚀 Production Installation
+
+For production deployments, we provide automated installation scripts for different platforms.
+
+### Ubuntu Server (24.10 / 24.04 LTS)
+
+For standalone Ubuntu servers:
+
+```bash
+git clone https://github.com/nexusct/cloudpbx-admin-dashboard.git
+cd cloudpbx-admin-dashboard
+chmod +x scripts/install.sh
+sudo ./scripts/install.sh
+```
+
+Access at: `http://YOUR_SERVER_IP`
+
+See the [Ubuntu Deployment Guide](DEPLOYMENT.md) for detailed instructions.
+
+### PBX in a Flash (CentOS/RHEL/Debian)
+
+For PBX in a Flash, FreePBX, or Asterisk servers:
+
+```bash
+git clone https://github.com/nexusct/cloudpbx-admin-dashboard.git
+cd cloudpbx-admin-dashboard
+chmod +x scripts/install-pbx-flash.sh
+sudo ./scripts/install-pbx-flash.sh
+```
+
+Access at: `http://YOUR_SERVER_IP:8080`
+
+This script supports:
+- CentOS 6/7/8, RHEL 7/8/9
+- AlmaLinux 8/9, Rocky Linux 8/9
+- Debian 9/10/11/12, Ubuntu
+
+See the [PBX in a Flash Installation Guide](docs/integrations/pbx-in-a-flash-install.md) for detailed instructions.
+
+---
+
 ## 📚 Extensive Documentation
 
 We provide extensive documentation for system administrators, developers, and advanced users.
@@ -96,6 +137,7 @@ Learn how to connect specific PBX systems to your dashboard:
 Deploying to a live server? We've got you covered.
 
 - **[Ubuntu 24.10 Comprehensive Deployment Guide](DEPLOYMENT.md)** - Complete systemd, nginx, and SSL setup.
+- **[PBX in a Flash Installation Guide](docs/integrations/pbx-in-a-flash-install.md)** - Install CloudPBX directly on your PBX in a Flash server.
 
 ---
 
