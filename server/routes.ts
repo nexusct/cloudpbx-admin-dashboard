@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import { registerIntegrationRoutes } from "./integrations/index";
 import { registerTradingRoutes } from "./trading/routes";
 import { sipRuntime } from "./sip/sipRuntime";
+import { requireAuth } from "./auth";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -17,6 +18,8 @@ export async function registerRoutes(
 ): Promise<Server> {
 
   await storage.seedInitialData();
+
+  app.use("/api", requireAuth);
 
   registerIntegrationRoutes(app);
   await registerTradingRoutes(app);

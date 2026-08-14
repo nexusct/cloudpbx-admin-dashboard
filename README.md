@@ -59,6 +59,14 @@ DATABASE_URL="postgresql://username:password@localhost:5432/cloudpbx"
 PORT=5000                    # Default: 5000
 NODE_ENV=development         # Values: development | production
 
+# Security (Required in production)
+# Generate admin token: openssl rand -base64 48
+ADMIN_TOKEN=your-secure-random-token-at-least-32-chars
+ALLOWED_ORIGINS=https://yourdomain.com  # Comma-separated origins for CORS
+
+# Webhook Security (Optional - if using webhooks)
+TWILIO_AUTH_TOKEN=...        # For Twilio webhook signature verification
+
 # AI Features (Optional)
 AI_INTEGRATIONS_OPENAI_API_KEY=sk-...        # OpenAI API key for AI assistant
 AI_INTEGRATIONS_OPENAI_BASE_URL=https://...  # Custom OpenAI endpoint (optional)
@@ -202,11 +210,63 @@ This project follows enterprise security standards and includes multiple layers 
 
 ### Security Features
 
+- **Authentication Required**: All API endpoints require Bearer token authentication
+- **CORS Protection**: Explicit origin whitelisting, no wildcard with credentials
+- **Webhook Signature Verification**: Built-in verification for Twilio and generic webhooks
 - **Secret Scanning**: Pre-commit hooks with gitleaks and detect-secrets
 - **Input Validation**: All API endpoints validate input with Zod schemas
 - **Dependency Scanning**: Regular npm audit and Dependabot updates
 - **No Hardcoded Credentials**: All secrets are externalized to environment variables
-- **Secure Defaults**: Example webhook secrets are clearly marked as non-production
+
+### Authentication
+
+All API endpoints require authentication via Bearer token:
+
+```bash
+curl -H "Authorization: Bearer your-admin-token" \
+  http://localhost:5000/api/extensions
+```
+
+**Required Configuration:**
+- Set `ADMIN_TOKEN` environment variable (minimum 32 characters)
+- Token cannot contain placeholder words (admin, password, test, etc.)
+- Generate secure token: `openssl rand -base64 48`
+
+**Security Requirements:**
+- Token must be at least 32 characters long
+- Token validation rejects weak/placeholder values
+- Failed authentication attempts are logged with IP address
+
+### CORS Configuration
+
+Cross-Origin Resource Sharing is explicitly configured:
+
+```bash
+# Allow specific origins (comma-separated)
+ALLOWED_ORIGINS=https://app.example.com,https://admin.example.com
+```
+
+**Security Rules:**
+- Wildcard (`*`) is rejected when credentials are used
+- Only whitelisted origins receive CORS headers
+- Credentials are allowed only for approved origins
+
+### Webhook Security
+
+Webhook signature verification is built-in for external integrations:
+
+```typescript
+// Twilio webhook (automatic signature verification)
+app.post("/webhooks/twilio/incoming", verifyTwilioSignature, handler);
+
+// Generic webhook (GitHub, Stripe, etc.)
+app.post("/webhooks/github", verifyGenericWebhookSignature("GITHUB_WEBHOOK_SECRET"), handler);
+```
+
+Required environment variables:
+- `TWILIO_AUTH_TOKEN` - For Twilio webhook verification
+- `GITHUB_WEBHOOK_SECRET` - For GitHub webhook verification
+- `STRIPE_WEBHOOK_SECRET` - For Stripe webhook verification
 
 ### Reporting Security Issues
 
