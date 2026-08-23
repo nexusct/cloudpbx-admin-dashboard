@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 
 const FORBIDDEN_TOKENS = [
   "admin",
@@ -57,7 +58,21 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
   const providedToken = parts[1];
 
-  if (providedToken !== adminToken) {
+  // Use timing-safe comparison to prevent timing attacks
+  try {
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(providedToken),
+      Buffer.from(adminToken)
+    );
+    
+    if (!isValid) {
+      console.warn(`SECURITY: Failed authentication attempt from ${req.ip}`);
+      return res.status(403).json({ 
+        error: "Invalid authentication token" 
+      });
+    }
+  } catch {
+    // Buffers have different lengths
     console.warn(`SECURITY: Failed authentication attempt from ${req.ip}`);
     return res.status(403).json({ 
       error: "Invalid authentication token" 
@@ -73,8 +88,18 @@ export function optionalAuth(req: Request, res: Response, next: NextFunction) {
 
   if (adminToken && authHeader) {
     const parts = authHeader.split(" ");
-    if (parts.length === 2 && parts[0] === "Bearer" && parts[1] === adminToken) {
-      (req as any).authenticated = true;
+    if (parts.length === 2 && parts[0] === "Bearer") {
+      try {
+        const isValid = crypto.timingSafeEqual(
+          Buffer.from(parts[1]),
+          Buffer.from(adminToken)
+        );
+        if (isValid) {
+          (req as any).authenticated = true;
+        }
+      } catch {
+        // Buffers have different lengths, token is invalid
+      }
     }
   }
 
