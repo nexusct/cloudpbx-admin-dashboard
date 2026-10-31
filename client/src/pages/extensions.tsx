@@ -241,7 +241,7 @@ export default function Extensions() {
         title="Extensions"
         description="Manage phone extensions and user assignments"
       >
-        <Button variant="outline" size="sm" data-testid="button-import-extensions">
+        <Button variant="outline" size="sm" disabled title="Import is not available yet" data-testid="button-import-extensions">
           <Upload className="h-4 w-4 mr-2" />
           Import
         </Button>
