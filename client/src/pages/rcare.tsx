@@ -614,6 +614,7 @@ export default function RCarePage() {
                         <Button
                           variant="outline" size="icon"
                           onClick={() => handleRemoveMapping(i)}
+                          aria-label={`Remove mapping ${i + 1}`}
                           data-testid={`button-remove-mapping-${i}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -665,6 +666,7 @@ export default function RCarePage() {
                           <Button
                             variant="outline" size="icon"
                             onClick={() => handleToggleRoute(i)}
+                            aria-label={route.enabled ? `Disable route ${i + 1}` : `Enable route ${i + 1}`}
                             data-testid={`button-toggle-route-${i}`}
                           >
                             {route.enabled ? <Eye className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
@@ -672,6 +674,7 @@ export default function RCarePage() {
                           <Button
                             variant="outline" size="icon"
                             onClick={() => handleRemoveRoute(i)}
+                            aria-label={`Remove route ${i + 1}`}
                             data-testid={`button-remove-route-${i}`}
                           >
                             <Trash2 className="w-4 h-4" />

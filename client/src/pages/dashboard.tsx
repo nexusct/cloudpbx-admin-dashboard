@@ -20,6 +20,7 @@ import {
   Headphones,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import type { Extension, CallLog, SmsMessage } from "@shared/schema";
 
 interface DashboardStats {
@@ -36,7 +37,16 @@ interface DashboardStats {
   totalQueues: number;
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function percentChange(current: number, previous: number) {
+  if (previous === 0) return undefined;
+  const delta = Math.round(((current - previous) / previous) * 100);
+  return { value: Math.abs(delta), isPositive: delta >= 0 };
+}
+
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
     queryKey: ["/api/dashboard/stats"],
   });
@@ -53,7 +63,22 @@ export default function Dashboard() {
     queryKey: ["/api/sms"],
   });
 
-  const totalCalls = callLogs.length;
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const todayMs = startOfToday.getTime();
+  const callsToday = callLogs.filter((call) => new Date(call.startTime).getTime() >= todayMs);
+  const callsSameDayLastWeek = callLogs.filter((call) => {
+    const time = new Date(call.startTime).getTime();
+    return time >= todayMs - 7 * DAY_MS && time < todayMs - 6 * DAY_MS;
+  });
+  const missedThisWeek = callLogs.filter((call) => {
+    const time = new Date(call.startTime).getTime();
+    return call.status === "missed" && time >= todayMs - 7 * DAY_MS;
+  }).length;
+  const missedLastWeek = callLogs.filter((call) => {
+    const time = new Date(call.startTime).getTime();
+    return call.status === "missed" && time >= todayMs - 14 * DAY_MS && time < todayMs - 7 * DAY_MS;
+  }).length;
   const activeExtensions = extensions.filter(
     (e) => e.status === "online" || e.status === "busy"
   );
@@ -113,17 +138,17 @@ export default function Dashboard() {
           <>
             <StatCard
               title="Total Calls Today"
-              value={totalCalls.toLocaleString()}
+              value={callsToday.length.toLocaleString()}
               description="Across all extensions"
               icon={Phone}
-              trend={{ value: 12, isPositive: true }}
+              trend={percentChange(callsToday.length, callsSameDayLastWeek.length)}
             />
             <StatCard
               title="Active Calls"
               value={stats?.activeCalls ?? 0}
               description="Currently in progress"
               icon={Headphones}
-              iconColor="text-green-600 dark:text-green-400"
+              iconColor="text-green-800 dark:text-green-300"
             />
             <StatCard
               title="Extensions Online"
@@ -136,8 +161,8 @@ export default function Dashboard() {
               value={missedCalls}
               description="Needs attention"
               icon={PhoneMissed}
-              iconColor="text-red-600 dark:text-red-400"
-              trend={{ value: 8, isPositive: false }}
+              iconColor="text-red-800 dark:text-red-300"
+              trend={percentChange(missedThisWeek, missedLastWeek)}
             />
           </>
         )}
@@ -150,8 +175,8 @@ export default function Dashboard() {
               <h3 className="font-semibold">Recent Calls</h3>
               <p className="text-sm text-muted-foreground">Latest call activity across the system</p>
             </div>
-            <Button variant="outline" size="sm" data-testid="button-view-all-calls">
-              View All
+            <Button variant="outline" size="sm" data-testid="button-view-all-calls" onClick={() => setLocation("/call-logs")}>
+              View all calls
             </Button>
           </div>
           <div className="space-y-3">

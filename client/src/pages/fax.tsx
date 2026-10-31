@@ -305,10 +305,24 @@ export default function Fax() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" data-testid={`view-fax-${fax.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`View fax from ${fax.fromNumber}`}
+                          disabled={!fax.documentUrl}
+                          onClick={() => fax.documentUrl && window.open(fax.documentUrl, "_blank", "noopener,noreferrer")}
+                          data-testid={`view-fax-${fax.id}`}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" data-testid={`download-fax-${fax.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Download fax from ${fax.fromNumber}`}
+                          disabled={!fax.documentUrl}
+                          onClick={() => fax.documentUrl && window.open(fax.documentUrl, "_blank", "noopener,noreferrer")}
+                          data-testid={`download-fax-${fax.id}`}
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
                       </div>

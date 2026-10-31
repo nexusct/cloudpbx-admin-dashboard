@@ -351,6 +351,7 @@ export default function SMS() {
                     size="icon"
                     onClick={handleSendReply}
                     disabled={sendReplyMutation.isPending}
+                    aria-label="Send reply"
                     data-testid="button-send-reply"
                   >
                     <Send className="h-4 w-4" />
