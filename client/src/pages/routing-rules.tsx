@@ -197,7 +197,7 @@ export default function RoutingRules() {
           <div className="flex items-center gap-3">
             <MapPin className="h-8 w-8 text-purple-500" />
             <div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-purple-800 dark:text-purple-300">
                 {rules.filter((r) => r.type === "geographic").length}
               </div>
               <div className="text-sm text-muted-foreground">Geographic</div>
@@ -257,6 +257,7 @@ export default function RoutingRules() {
                       size="icon"
                       variant="ghost"
                       onClick={() => deleteMutation.mutate(rule.id)}
+                      aria-label={`Delete rule ${rule.name}`}
                       data-testid={`button-delete-rule-${rule.id}`}
                     >
                       <Trash2 className="h-4 w-4" />

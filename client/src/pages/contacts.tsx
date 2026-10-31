@@ -229,6 +229,7 @@ export default function Contacts() {
                         e.stopPropagation();
                         deleteMutation.mutate(contact.id);
                       }}
+                      aria-label={`Delete ${contact.firstName} ${contact.lastName}`}
                       data-testid={`button-delete-contact-${contact.id}`}
                     >
                       <Trash2 className="h-4 w-4" />

@@ -247,9 +247,9 @@ export default function AIAssistant() {
                   </Avatar>
                   <div className="bg-muted rounded-lg p-3">
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <div className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" style={{ animationDelay: "0ms" }} />
+                      <div className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" style={{ animationDelay: "150ms" }} />
+                      <div className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 </div>

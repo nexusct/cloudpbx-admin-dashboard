@@ -142,8 +142,17 @@ export default function VoicemailPage() {
             voicemails.map((vm) => (
               <Card
                 key={vm.id}
-                className={`p-4 hover-elevate cursor-pointer ${!vm.isRead ? "border-l-4 border-l-primary" : ""}`}
+                className="p-4 hover-elevate cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`Open voicemail from ${vm.callerName || vm.callerNumber}`}
                 onClick={() => openVoicemail(vm)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openVoicemail(vm);
+                  }
+                }}
                 data-testid={`card-voicemail-${vm.id}`}
               >
                 <div className="flex items-center gap-4">
@@ -187,6 +196,7 @@ export default function VoicemailPage() {
                         e.stopPropagation();
                         deleteMutation.mutate(vm.id);
                       }}
+                      aria-label={`Delete voicemail from ${vm.callerName || vm.callerNumber}`}
                       data-testid={`button-delete-voicemail-${vm.id}`}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -224,6 +234,7 @@ export default function VoicemailPage() {
                     size="icon"
                     variant="outline"
                     onClick={() => setIsPlaying(!isPlaying)}
+                    aria-label={isPlaying ? "Pause voicemail" : "Play voicemail"}
                     data-testid="button-play-voicemail"
                   >
                     {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}

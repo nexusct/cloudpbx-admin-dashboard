@@ -259,20 +259,20 @@ export default function CallFlows() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" data-testid={`menu-flow-${flow.id}`}>
+                      <Button variant="ghost" size="icon" aria-label={`Actions for ${flow.name}`} data-testid={`menu-flow-${flow.id}`}>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit Flow
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled>
                         <Copy className="h-4 w-4 mr-2" />
                         Duplicate
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled>
                         <PlayCircle className="h-4 w-4 mr-2" />
                         Test Flow
                       </DropdownMenuItem>

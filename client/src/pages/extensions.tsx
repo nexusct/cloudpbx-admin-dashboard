@@ -63,6 +63,16 @@ import {
   Upload,
   Filter,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Extension } from "@shared/schema";
@@ -78,6 +88,8 @@ type CreateExtensionFormValues = InsertExtension;
 export default function Extensions() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingExtension, setEditingExtension] = useState<Extension | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Extension | null>(null);
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const { toast } = useToast();
 
@@ -108,13 +120,101 @@ export default function Extensions() {
       form.reset();
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create extension.", variant: "destructive" });
+      toast({
+        title: "Couldn't create the extension",
+        description: "Check that the number is unique, then try again.",
+        variant: "destructive",
+      });
     },
   });
 
+  const updateExtensionMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: CreateExtensionFormValues }) => {
+      return apiRequest("PATCH", `/api/extensions/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/extensions"] });
+      toast({ title: "Extension saved", description: "Changes are live for this extension." });
+      setIsAddDialogOpen(false);
+      setEditingExtension(null);
+      form.reset();
+    },
+    onError: () => {
+      toast({
+        title: "Couldn't save the extension",
+        description: "Check that the number is unique, then try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteExtensionMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/extensions/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/extensions"] });
+      toast({ title: "Extension deleted", description: "It no longer receives calls." });
+      setDeleteTarget(null);
+    },
+    onError: () => {
+      toast({
+        title: "Couldn't delete the extension",
+        description: "Try again. The extension is still in the list.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const openEditor = (extension: Extension | null) => {
+    setEditingExtension(extension);
+    form.reset(
+      extension
+        ? {
+            number: extension.number,
+            name: extension.name,
+            department: extension.department ?? "",
+            type: extension.type,
+            voicemailEnabled: extension.voicemailEnabled ?? true,
+            status: extension.status,
+          }
+        : {
+            number: "",
+            name: "",
+            department: "",
+            type: "sip",
+            voicemailEnabled: true,
+            status: "offline",
+          },
+    );
+    setIsAddDialogOpen(true);
+  };
+
   const onSubmit = (data: CreateExtensionFormValues) => {
+    if (editingExtension) {
+      updateExtensionMutation.mutate({ id: editingExtension.id, data });
+      return;
+    }
     createExtensionMutation.mutate(data);
   };
+
+  const exportExtensions = () => {
+    const header = ["number", "name", "department", "type", "status"];
+    const lines = extensions.map((ext) =>
+      [ext.number, ext.name, ext.department ?? "", ext.type, ext.status]
+        .map((value) => `"${String(value).replaceAll('"', '""')}"`)
+        .join(","),
+    );
+    const blob = new Blob([[header.join(","), ...lines].join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "extensions.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const saving = createExtensionMutation.isPending || updateExtensionMutation.isPending;
 
   const filteredExtensions = extensions.filter((ext) => {
     const matchesSearch =
@@ -145,13 +245,16 @@ export default function Extensions() {
           <Upload className="h-4 w-4 mr-2" />
           Import
         </Button>
-        <Button variant="outline" size="sm" data-testid="button-export-extensions">
+        <Button variant="outline" size="sm" data-testid="button-export-extensions" onClick={exportExtensions}>
           <Download className="h-4 w-4 mr-2" />
           Export
         </Button>
         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
           setIsAddDialogOpen(open);
-          if (!open) form.reset();
+          if (!open) {
+            setEditingExtension(null);
+            form.reset();
+          }
         }}>
           <DialogTrigger asChild>
             <Button data-testid="button-add-extension">
@@ -161,9 +264,11 @@ export default function Extensions() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add New Extension</DialogTitle>
+              <DialogTitle>{editingExtension ? `Edit extension ${editingExtension.number}` : "Add New Extension"}</DialogTitle>
               <DialogDescription>
-                Create a new phone extension for your system
+                {editingExtension
+                  ? "Update the name, department, type, and voicemail for this extension."
+                  : "Create a new phone extension for your system"}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -200,7 +305,7 @@ export default function Extensions() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Department</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value ?? undefined}>
+                      <Select onValueChange={field.onChange} value={field.value || undefined}>
                         <FormControl>
                           <SelectTrigger data-testid="select-department">
                             <SelectValue placeholder="Select department" />
@@ -224,7 +329,7 @@ export default function Extensions() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Extension Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value || "sip"}>
                         <FormControl>
                           <SelectTrigger data-testid="select-type">
                             <SelectValue />
@@ -263,8 +368,8 @@ export default function Extensions() {
                   <Button variant="outline" type="button" onClick={() => setIsAddDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={createExtensionMutation.isPending} data-testid="button-save-extension">
-                    {createExtensionMutation.isPending ? "Creating..." : "Create Extension"}
+                  <Button type="submit" disabled={saving} data-testid="button-save-extension">
+                    {saving ? "Saving..." : editingExtension ? "Save extension" : "Create Extension"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -385,31 +490,35 @@ export default function Extensions() {
                   <TableCell>
                     <div className="flex gap-1">
                       {ext.voicemailEnabled && (
-                        <Voicemail className="h-4 w-4 text-muted-foreground" />
+                        <span role="img" aria-label="Voicemail on">
+                          <Voicemail className="h-4 w-4 text-muted-foreground" />
+                        </span>
                       )}
                       {ext.callForwardingEnabled && (
-                        <Forward className="h-4 w-4 text-muted-foreground" />
+                        <span role="img" aria-label="Call forwarding on">
+                          <Forward className="h-4 w-4 text-muted-foreground" />
+                        </span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" data-testid={`button-ext-menu-${ext.id}`}>
+                        <Button variant="ghost" size="icon" aria-label={`Actions for extension ${ext.number}`} data-testid={`button-ext-menu-${ext.id}`}>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditor(ext)}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditor(ext)}>
                           <Settings className="h-4 w-4 mr-2" />
                           Configure
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem className="text-destructive" onClick={() => setDeleteTarget(ext)}>
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
@@ -422,6 +531,29 @@ export default function Extensions() {
           </TableBody>
         </Table>
       </Card>
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete extension {deleteTarget?.number}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget?.name} will stop receiving calls. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep extension</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteExtensionMutation.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                if (deleteTarget) deleteExtensionMutation.mutate(deleteTarget.id);
+              }}
+            >
+              {deleteExtensionMutation.isPending ? "Deleting..." : "Delete extension"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
