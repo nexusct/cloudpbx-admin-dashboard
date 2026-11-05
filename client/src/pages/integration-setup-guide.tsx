@@ -40,6 +40,7 @@ function CopyButton({ text }: { text: string }) {
       size="icon"
       variant="ghost"
       onClick={handleCopy}
+      aria-label={copied ? "Copied" : "Copy"}
       data-testid="button-copy"
     >
       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -906,7 +907,7 @@ export default function IntegrationSetupGuide() {
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3 flex-wrap">
         <Link href="/integrations">
-          <Button variant="ghost" size="icon" data-testid="button-back-integrations">
+          <Button variant="ghost" size="icon" aria-label="Back to integrations" data-testid="button-back-integrations">
             <ArrowLeft className="w-4 h-4" />
           </Button>
         </Link>

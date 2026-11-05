@@ -417,16 +417,16 @@ export default function DIDs() {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" data-testid={`menu-did-${did.id}`}>
+                        <Button variant="ghost" size="icon" aria-label={`Actions for number ${did.number}`} data-testid={`menu-did-${did.id}`}>
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                           <Settings className="h-4 w-4 mr-2" />
                           Configure
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                           <Edit className="h-4 w-4 mr-2" />
                           Assign
                         </DropdownMenuItem>

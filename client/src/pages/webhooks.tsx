@@ -245,6 +245,7 @@ export default function Webhooks() {
                       size="icon"
                       variant="ghost"
                       onClick={() => deleteMutation.mutate(webhook.id)}
+                      aria-label={`Delete webhook ${webhook.name}`}
                       data-testid={`button-delete-webhook-${webhook.id}`}
                     >
                       <Trash2 className="h-4 w-4" />

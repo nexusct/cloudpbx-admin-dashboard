@@ -9,7 +9,8 @@ interface StatCardProps {
   icon: LucideIcon;
   trend?: {
     value: number;
-    isPositive: boolean;
+    increased: boolean;
+    favorable: boolean;
   };
   iconColor?: string;
 }
@@ -25,8 +26,8 @@ export function StatCard({ title, value, description, icon: Icon, trend, iconCol
             <span className="text-xs text-muted-foreground">{description}</span>
           )}
           {trend && (
-            <span className={`text-xs font-medium ${trend.isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-              {trend.isPositive ? "+" : ""}{trend.value}% from last week
+            <span className={`text-xs font-medium ${trend.favorable ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300"}`}>
+              {trend.increased ? "+" : "-"}{trend.value}% from last week
             </span>
           )}
         </div>

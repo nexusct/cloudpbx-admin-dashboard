@@ -385,21 +385,21 @@ export default function Devices() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" data-testid={`menu-device-${device.id}`}>
+                          <Button variant="ghost" size="icon" aria-label={`Actions for ${device.name}`} data-testid={`menu-device-${device.id}`}>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <Settings className="h-4 w-4 mr-2" />
                             Configure
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Reboot
                           </DropdownMenuItem>
                           {needsUpdate && (
-                            <DropdownMenuItem>
+                            <DropdownMenuItem disabled>
                               <Download className="h-4 w-4 mr-2" />
                               Update Firmware
                             </DropdownMenuItem>

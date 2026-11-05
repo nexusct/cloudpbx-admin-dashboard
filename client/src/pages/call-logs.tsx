@@ -253,7 +253,16 @@ export default function CallLogs() {
                 </TableCell>
                 <TableCell>
                   {log.recordingUrl && (
-                    <Button variant="ghost" size="icon" data-testid={`play-recording-${log.id}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Play recording from ${log.fromNumber}`}
+                      onClick={() => {
+                        const audio = new Audio(log.recordingUrl!);
+                        void audio.play();
+                      }}
+                      data-testid={`play-recording-${log.id}`}
+                    >
                       <Play className="h-4 w-4" />
                     </Button>
                   )}

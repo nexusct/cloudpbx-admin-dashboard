@@ -299,16 +299,16 @@ export default function RingGroups() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" data-testid={`menu-group-${group.id}`}>
+                          <Button variant="ghost" size="icon" aria-label={`Actions for ${group.name}`} data-testid={`menu-group-${group.id}`}>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Group
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <Settings className="h-4 w-4 mr-2" />
                             Manage Members
                           </DropdownMenuItem>

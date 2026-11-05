@@ -324,16 +324,16 @@ export default function Queues() {
                       />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" data-testid={`menu-queue-${queue.id}`}>
+                          <Button variant="ghost" size="icon" aria-label={`Actions for ${queue.name}`} data-testid={`menu-queue-${queue.id}`}>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Queue
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem disabled>
                             <Settings className="h-4 w-4 mr-2" />
                             Manage Agents
                           </DropdownMenuItem>

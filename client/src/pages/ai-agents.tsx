@@ -368,13 +368,14 @@ export default function AIAgents() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-2">
-                                                    <Button variant="ghost" size="icon">
+                                                    <Button variant="ghost" size="icon" disabled aria-label={`Edit ${agent.name}`}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
                                                         className="text-destructive"
+                                                        aria-label={`Delete ${agent.name}`}
                                                         onClick={() => {
                                                             if (confirm("Are you sure you want to delete this AI agent?")) {
                                                                 deleteAgentMutation.mutate(agent.id);

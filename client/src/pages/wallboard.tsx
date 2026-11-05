@@ -131,7 +131,7 @@ export default function Wallboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">SLA %</p>
-              <p className="text-4xl font-bold text-purple-600">{slaPercentage}%</p>
+              <p className="text-4xl font-bold text-purple-800 dark:text-purple-300">{slaPercentage}%</p>
             </div>
             <div className="h-14 w-14 rounded-full bg-purple-500/20 flex items-center justify-center">
               <TrendingUp className="h-7 w-7 text-purple-500" />
