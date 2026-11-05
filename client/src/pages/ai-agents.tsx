@@ -46,7 +46,6 @@ import { Plus, Search, Headset, Edit, Trash2, FileText, Play, Activity } from "l
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { AiAgent, AiAgentCall, Extension } from "@shared/schema";
-import { insertAiAgentSchema, type InsertAiAgent } from "@shared/schema";
 
 import { z } from "zod";
 
@@ -60,7 +59,7 @@ const createAgentFormSchema = z.object({
     isActive: z.boolean().optional(),
 });
 
-type CreateAgentFormValues = InsertAiAgent;
+type CreateAgentFormValues = z.infer<typeof createAgentFormSchema>;
 
 export default function AIAgents() {
     const [searchQuery, setSearchQuery] = useState("");

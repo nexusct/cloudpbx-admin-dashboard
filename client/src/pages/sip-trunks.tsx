@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { SipProvider, SipTrunk, DeviceTemplate } from "@shared/schema";
-import { insertSipTrunkSchema, type InsertSipTrunk } from "@shared/schema";
+import { insertSipTrunkSchema } from "@shared/schema";
 import { 
   Phone, 
   Server, 
@@ -39,7 +39,7 @@ const createTrunkFormSchema = insertSipTrunkSchema.extend({
   name: insertSipTrunkSchema.shape.name.min(1, "Trunk name is required"),
 });
 
-type CreateTrunkFormValues = InsertSipTrunk;
+type CreateTrunkFormValues = z.input<typeof createTrunkFormSchema>;
 
 export default function SipTrunks() {
   const [isCreateTrunkOpen, setIsCreateTrunkOpen] = useState(false);

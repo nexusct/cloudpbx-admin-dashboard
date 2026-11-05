@@ -37,7 +37,7 @@ async function runTests() {
         });
         assert(false, "Zod accepted missing host");
     } catch (e: any) {
-        assert(e.errors[0].message === "Required", "Zod properly rejected missing host");
+        assert(e.issues?.[0]?.path?.[0] === "host" && e.issues[0].code === "invalid_type", "Zod properly rejected missing host");
     }
 
     // 3. Zod Testing - Invalid Port
@@ -50,7 +50,7 @@ async function runTests() {
         });
         assert(false, "Zod accepted invalid port 999999");
     } catch (e: any) {
-        assert(e.errors[0].message.includes("Number must be less than or equal to 65535"), "Zod properly rejected invalid port > 65535");
+        assert(e.issues?.[0]?.path?.[0] === "port" && e.issues[0].code === "too_big", "Zod properly rejected invalid port > 65535");
     }
 
     // 4. Zod Testing - Default Port
