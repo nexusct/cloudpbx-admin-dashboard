@@ -89,7 +89,20 @@ When contributing to this repository:
 
 ## Recent Security Updates
 
-### 2026-08 (This Release)
+### 2026-08 — Dependabot remediation (round 2)
+
+**Dependency Updates:**
+- `proxy-addr` 2.0.7 → 2.0.8 (Critical: IP spoofing via IPv4-mapped IPv6 trust subnet, GHSA-jqcg-44mw-7w3h)
+- `body-parser` 2.3.0 → 2.4.0 (High: DoS via trailing bytes after compressed body, GHSA-27r3-jxmh-p828)
+- `brace-expansion` 5.0.9 → 5.0.12 (High: quadratic-time / recursion DoS)
+- `browserslist` 4.28.1 → 4.29.5 (High: unbounded memory growth, prototype write via custom stats)
+- `source-map-js` 1.2.1 → 1.2.2 (High: event-loop DoS via indexed section offsets)
+- `vite` 7.3.5 → 7.3.7 (High: `launch-editor` command execution on Windows)
+- `zod` 3.25.76 → 4.6.7 (High: memory exhaustion validating oversized constrained collections, GHSA-mrhx-c7xc-m3w5), with `drizzle-zod` 0.8.3, `@hookform/resolvers` 5.9.2 and `zod-validation-error` 5.0.0 for zod 4 compatibility
+
+**Accepted (dev-only, moderate/low):** `eslint`/`typescript-eslint` (`minimatch` ReDoS), `@tailwindcss/typography` (`postcss-selector-parser` DoS) and `esbuild` (Windows dev server). The only fixes npm offers are downgrades; these tools never run with untrusted input in production.
+
+### 2026-08 — Security controls (PR #93)
 
 **Dependency Updates:**
 - Updated `drizzle-orm` from 0.39.3 → 0.45.2 (fixes CVE-2026-39356: SQL injection via identifiers)
@@ -108,12 +121,13 @@ When contributing to this repository:
 - ✅ Google API key alert (#1) verified as already removed in previous incident response
 - ✅ All API credentials properly externalized to environment variables
 - ✅ Pre-commit hooks functioning correctly
-- ⚠️ No authentication system currently implemented (application assumes trusted network)
+- ✅ Bearer-token authentication (`server/auth.ts`, timing-safe comparison) enforced on all `/api/*` routes
+- ✅ CORS origin allowlist (`server/cors.ts`) and webhook signature verification helpers (`server/webhooks.ts`)
 
-**Recommendations:**
-1. Consider implementing authentication middleware if exposing to untrusted networks
-2. Implement webhook signature verification when webhook functionality is enabled
-3. Add rate limiting to public API endpoints
+**Remaining recommendations:**
+1. Add rate limiting to the authentication path and public endpoints
+2. Wire `verifyTwilioSignature` / `verifyGenericWebhookSignature` onto webhook routes as they are added
+3. Rotate the Google Maps API key referenced in NCT-SEC-2026-04-19-001 if not already done (removal from the tree does not revoke it)
 
 ## Incident History
 
