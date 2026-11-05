@@ -39,10 +39,16 @@ interface DashboardStats {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function percentChange(current: number, previous: number) {
+function percentChange(current: number, previous: number, lowerIsBetter = false) {
   if (previous === 0) return undefined;
   const delta = Math.round(((current - previous) / previous) * 100);
-  return { value: Math.abs(delta), isPositive: delta >= 0 };
+  if (delta === 0) return undefined;
+  const increased = delta > 0;
+  return {
+    value: Math.abs(delta),
+    increased,
+    favorable: lowerIsBetter ? !increased : increased,
+  };
 }
 
 export default function Dashboard() {
@@ -82,7 +88,6 @@ export default function Dashboard() {
   const activeExtensions = extensions.filter(
     (e) => e.status === "online" || e.status === "busy"
   );
-  const missedCalls = callLogs.filter((c) => c.status === "missed").length;
   const recentCalls = [...callLogs]
     .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
     .slice(0, 5);
@@ -158,11 +163,11 @@ export default function Dashboard() {
             />
             <StatCard
               title="Missed Calls"
-              value={missedCalls}
-              description="Needs attention"
+              value={missedThisWeek}
+              description="This week"
               icon={PhoneMissed}
               iconColor="text-red-800 dark:text-red-300"
-              trend={percentChange(missedThisWeek, missedLastWeek)}
+              trend={percentChange(missedThisWeek, missedLastWeek, true)}
             />
           </>
         )}

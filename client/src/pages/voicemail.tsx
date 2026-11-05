@@ -148,6 +148,7 @@ export default function VoicemailPage() {
                 aria-label={`Open voicemail from ${vm.callerName || vm.callerNumber}`}
                 onClick={() => openVoicemail(vm)}
                 onKeyDown={(event) => {
+                  if (event.target !== event.currentTarget) return;
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
                     openVoicemail(vm);

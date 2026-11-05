@@ -320,7 +320,18 @@ export default function Fax() {
                           size="icon"
                           aria-label={`Download fax from ${fax.fromNumber}`}
                           disabled={!fax.documentUrl}
-                          onClick={() => fax.documentUrl && window.open(fax.documentUrl, "_blank", "noopener,noreferrer")}
+                          onClick={() => {
+                            if (!fax.documentUrl) return;
+                            const filename = fax.documentUrl.split("/").pop()?.split("?")[0] || `fax-${fax.id}`;
+                            const link = document.createElement("a");
+                            link.href = fax.documentUrl;
+                            link.download = filename;
+                            link.rel = "noopener";
+                            link.target = "_blank";
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+                          }}
                           data-testid={`download-fax-${fax.id}`}
                         >
                           <Download className="h-4 w-4" />

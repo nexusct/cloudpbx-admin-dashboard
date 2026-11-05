@@ -24,7 +24,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -85,6 +84,15 @@ const createExtensionFormSchema = insertExtensionSchema.extend({
 
 type CreateExtensionFormValues = InsertExtension;
 
+const blankExtension: CreateExtensionFormValues = {
+  number: "",
+  name: "",
+  department: "",
+  type: "sip",
+  voicemailEnabled: true,
+  status: "offline",
+};
+
 export default function Extensions() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -95,19 +103,35 @@ export default function Extensions() {
 
   const form = useForm<CreateExtensionFormValues>({
     resolver: zodResolver(createExtensionFormSchema),
-    defaultValues: {
-      number: "",
-      name: "",
-      department: "",
-      type: "sip",
-      voicemailEnabled: true,
-      status: "offline",
-    },
+    defaultValues: blankExtension,
   });
 
   const { data: extensions = [], isLoading } = useQuery<Extension[]>({
     queryKey: ["/api/extensions"],
   });
+
+  const closeEditor = () => {
+    setIsAddDialogOpen(false);
+    setEditingExtension(null);
+    form.reset(blankExtension);
+  };
+
+  const openEditor = (extension: Extension | null) => {
+    setEditingExtension(extension);
+    form.reset(
+      extension
+        ? {
+            number: extension.number,
+            name: extension.name,
+            department: extension.department ?? "",
+            type: extension.type,
+            voicemailEnabled: extension.voicemailEnabled ?? true,
+            status: extension.status,
+          }
+        : blankExtension,
+    );
+    setIsAddDialogOpen(true);
+  };
 
   const createExtensionMutation = useMutation({
     mutationFn: async (data: CreateExtensionFormValues) => {
@@ -116,8 +140,7 @@ export default function Extensions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/extensions"] });
       toast({ title: "Extension Created", description: "The extension has been successfully created." });
-      setIsAddDialogOpen(false);
-      form.reset();
+      closeEditor();
     },
     onError: () => {
       toast({
@@ -135,9 +158,7 @@ export default function Extensions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/extensions"] });
       toast({ title: "Extension saved", description: "Changes are live for this extension." });
-      setIsAddDialogOpen(false);
-      setEditingExtension(null);
-      form.reset();
+      closeEditor();
     },
     onError: () => {
       toast({
@@ -165,30 +186,6 @@ export default function Extensions() {
       });
     },
   });
-
-  const openEditor = (extension: Extension | null) => {
-    setEditingExtension(extension);
-    form.reset(
-      extension
-        ? {
-            number: extension.number,
-            name: extension.name,
-            department: extension.department ?? "",
-            type: extension.type,
-            voicemailEnabled: extension.voicemailEnabled ?? true,
-            status: extension.status,
-          }
-        : {
-            number: "",
-            name: "",
-            department: "",
-            type: "sip",
-            voicemailEnabled: true,
-            status: "offline",
-          },
-    );
-    setIsAddDialogOpen(true);
-  };
 
   const onSubmit = (data: CreateExtensionFormValues) => {
     if (editingExtension) {
@@ -250,18 +247,16 @@ export default function Extensions() {
           Export
         </Button>
         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-          setIsAddDialogOpen(open);
-          if (!open) {
-            setEditingExtension(null);
-            form.reset();
+          if (open) {
+            setIsAddDialogOpen(true);
+            return;
           }
+          closeEditor();
         }}>
-          <DialogTrigger asChild>
-            <Button data-testid="button-add-extension">
+            <Button type="button" data-testid="button-add-extension" onClick={() => openEditor(null)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Extension
             </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{editingExtension ? `Edit extension ${editingExtension.number}` : "Add New Extension"}</DialogTitle>
@@ -365,7 +360,7 @@ export default function Extensions() {
                   )}
                 />
                 <DialogFooter>
-                  <Button variant="outline" type="button" onClick={() => setIsAddDialogOpen(false)}>
+                  <Button variant="outline" type="button" onClick={closeEditor}>
                     Cancel
                   </Button>
                   <Button type="submit" disabled={saving} data-testid="button-save-extension">
